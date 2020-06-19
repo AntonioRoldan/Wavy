@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import config from '../config'
 var JwtStrategy = require('passport-jwt').Strategy
 var ExtractJwt = require('passport-jwt').ExtractJwt

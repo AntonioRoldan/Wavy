@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import { Service, Inject } from 'typedi'
 import _ from 'lodash'
 import bcrypt from 'bcrypt'

@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import { createStore, applyMiddleware, compose } from 'redux'
 import { rootReducer } from './reducer'
 import { persistStore, persistReducer } from 'redux-persist'

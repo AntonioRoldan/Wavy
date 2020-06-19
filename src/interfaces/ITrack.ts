@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import mongoose, { Document } from 'mongoose'
 export interface ITrack extends Document {
   authorId: mongoose.Schema.Types.ObjectId

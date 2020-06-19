@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import expressLoader from './express'
 import mongooseLoader from './mongoose'
 import dependancyInjectorLoader from './dependancyInjector'

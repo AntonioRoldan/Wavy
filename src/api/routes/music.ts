@@ -1,3 +1,10 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
+
 // This route is reponsible for managing playlists, music tracks, albums, etc 
 //
 // IMPORTANT 

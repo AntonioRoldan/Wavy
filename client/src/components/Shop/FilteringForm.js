@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import React from 'react'
 
 const FilteringForm = () => {

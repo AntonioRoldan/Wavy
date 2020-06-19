@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Box, Grid } from '@material-ui/core'

@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import { Request, Response, NextFunction } from 'express'
 const jwt = require('jsonwebtoken')
 import config from '../../config'

@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import React, { useState, useEffect } from 'react'
 import LandingMessage from '../components/LandingMessage/LandingMessage'
 

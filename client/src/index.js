@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { PersistGate } from 'redux-persist/integration/react'

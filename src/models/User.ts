@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import mongoose, { Schema, Document, Model } from 'mongoose'
 import { IUser, IUserModel } from '../interfaces/IUser'
 

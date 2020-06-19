@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import { ObjectId } from 'bson'

@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import express, { Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
 import routes from '../api'

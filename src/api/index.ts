@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import { Router } from 'express'
 import auth from './routes/auth'
 import explore from './routes/explore'

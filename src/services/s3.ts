@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import { Service, Inject } from 'typedi'
 import config from '../config'
 import aws from 'aws-sdk'

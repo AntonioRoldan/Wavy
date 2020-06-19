@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 /*
 These routes allow the user to change his profile info, 
 delete tracks, albums or tracks from albums 

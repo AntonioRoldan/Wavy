@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import React from 'react'
 import { Button } from 'reactstrap'
 import { Link } from 'react-router-dom'

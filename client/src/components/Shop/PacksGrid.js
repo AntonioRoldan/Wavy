@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import React, { Component } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Pack from './Pack'

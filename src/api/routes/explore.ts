@@ -1,4 +1,9 @@
 // This route is responsible for content recommendations
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 
 import express, { Request, Response, Router } from 'express'
 const isAuth = require('../middleware/isAuth')

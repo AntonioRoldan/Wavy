@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import smtpTransport from 'nodemailer-smtp-transport'
 import nodemailer from 'nodemailer'
 import { IUser } from '../interfaces/IUser'

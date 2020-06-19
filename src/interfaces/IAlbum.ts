@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import mongoose, { Document } from 'mongoose'
 export interface IAlbum extends Document {
   title: string

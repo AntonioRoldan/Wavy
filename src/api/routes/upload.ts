@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 /* 
 This route handles file uploads to S3 
 regex for password longer than 6 characters containing at least one weird character 

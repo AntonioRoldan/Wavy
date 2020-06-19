@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import React, { useState, useCallback, useEffect, useRef, Component } from 'react'
 import WavyNavbar from '../components/Navbar/Navbar'
 import { setScrollDown, setLoggedIn, clearStorage } from '../redux/actions'

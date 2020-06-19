@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import dotenv from 'dotenv'
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'

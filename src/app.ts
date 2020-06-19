@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import 'reflect-metadata' //Allows decorators for typedi 
 import express from 'express'
 import config from './config/index'

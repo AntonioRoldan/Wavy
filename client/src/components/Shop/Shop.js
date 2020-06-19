@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import React from 'react'
 import PacksGrid from './PacksGrid'
 import './Style/Shop.css'

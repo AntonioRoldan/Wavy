@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import mongoose, { Schema, Model, Document } from 'mongoose'
 export interface IUser extends Document {
   username: string

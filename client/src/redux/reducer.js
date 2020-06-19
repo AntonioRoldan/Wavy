@@ -1,3 +1,8 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
 import { SET_LOGGEDIN, SET_SCROLL_DOWN, CLEAR } from './constants'
 
 const rootState = {

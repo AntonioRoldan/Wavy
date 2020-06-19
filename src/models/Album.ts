@@ -1,3 +1,9 @@
+/*  
+  Copyright (c) 2020 Antonio Roldan 
+  All rights reserved 
+*/
+
+
 import mongoose, { Schema } from 'mongoose'
 import { IAlbum } from '../interfaces/IAlbum'
 
