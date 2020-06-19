@@ -4,6 +4,7 @@
 */
 
 /* 
+TODO: Refactor, call the route album, the create routes will be /album/create, edit /album/delete, edit /album/edit and so on 
 This route handles file uploads to S3 
 regex for password longer than 6 characters containing at least one weird character 
  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*:])(?=.{6,})/.test(value)
@@ -89,7 +90,7 @@ export default (app: Router) => {
       errorHandle(res, err.message, err.code)
     }
   })
-
+  // Edit track image 
   route.put('/tracks/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
   async (req: Request, res: Response) => {
     if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
@@ -98,7 +99,7 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const imageUrl = await trackService.uploadImageForExistingTrack(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
+      const imageUrl = await trackService.editTrackImage(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
       responseHandle(res, {imageUrl: imageUrl})
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -153,6 +154,10 @@ export default (app: Router) => {
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
+  })
+
+  route.put('/album/:name', (req: Request, res: Response) => {
+
   })
 
   route.delete('/album/:id', (req: Request, res: Response) => {

@@ -18,6 +18,7 @@ export default class AlbumService {
     @Inject('albumModel') private albumModel: Models.AlbumModel
   ) {}
 
+  // MARK: Create methods 
   public addTracksToExistingAlbum(userId: ObjectId, albumId: ObjectId, trackObjects: any[], trackFiles: any[]): Promise<any> {
     /*
     Allows user to add new tracks to an already uploaded album  
@@ -87,4 +88,18 @@ export default class AlbumService {
       }
     })
   }
+
+  // MARK: Read 
+
+  // Update 
+
+  public editAlbumUndercover() {
+
+  }
+  public editAlbumName() {
+
+  }
+
+  // MARK: Delete methods 
+
 }

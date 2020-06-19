@@ -16,6 +16,8 @@ export default class TrackService {
     @Inject('albumModel') private albumModel: Models.AlbumModel
   ) {}
 
+  // MARK: Create 
+
   public uploadTracks(
     userId: ObjectId,
     tracksObjects: any[],
@@ -64,19 +66,41 @@ export default class TrackService {
     })
   }
 
+  // MARK: Read 
 
-  public uploadImageForExistingTrack(userId:string, trackId: ObjectId, imageFile: any): Promise<any> {
+  // MARK: Update 
+
+  public editTrackName(trackId: ObjectId): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+    })
+  }
+
+  public editTrackImage(userId:string, trackId: ObjectId, imageFile: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
         const track = await this.trackModel.findById(trackId)
-        const imageUrl = await this.s3Service.uploadTracksImages(userId, [imageFile])
-        track.imageUrl = imageUrl[0]
-        const updatedTrack = await track.save()
-        resolve(imageUrl)
+        if(!track.isSingleTrack) reject({code: 400, msg: 'Change album undercover to change this track image'})
+        if(track.imageUrl) { // If there is an image already 
+          // TODO create s3 service method to delete the image then add a new image 
+          const imageUrl = await this.s3Service.uploadTracksImages(userId, [imageFile])
+          track.imageUrl = imageUrl[0]
+          const updatedTrack = await track.save()
+          console.log('updatedTrack :', updatedTrack)
+          resolve(imageUrl)
+        } else { // If track did not have an image we just add it 
+          const imageUrl = await this.s3Service.uploadTracksImages(userId, [imageFile])
+          track.imageUrl = imageUrl[0]
+          const updatedTrack = await track.save()
+          console.log('updatedTrack :', updatedTrack)
+          resolve(imageUrl)
+        }
       } catch(err) {
         reject({code: 500, msg: err.msg})
       }
     })
   }
+
+  // MARK: Delete
 
 }

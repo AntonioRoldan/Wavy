@@ -7,11 +7,11 @@
 import { Router } from 'express'
 import auth from './routes/auth'
 import explore from './routes/explore'
-import userConfig from './routes/user-config'
+import profile from './routes/profile'
 export default () => {
   const app = Router()
   auth(app)
   explore(app)
-  userConfig(app)
+  profile(app)
   return app
 }
