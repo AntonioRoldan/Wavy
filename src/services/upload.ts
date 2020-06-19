@@ -56,14 +56,49 @@ export default class UploadService {
     })
   }
 
-  public uploadImageForExistingTrack(trackId: ObjectId, imageFile: any){
-
+  public uploadImageForExistingTrack(userId:string, trackId: ObjectId, imageFile: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const track = await this.trackModel.findById(trackId)
+        const imageUrl = await this.s3Service.uploadTracksImages(userId, [imageFile])
+        track.imageUrl = imageUrl[0]
+        const updatedTrack = await track.save()
+        resolve(imageUrl)
+      } catch(err) {
+        reject({code: 500, msg: err.msg})
+      }
+    })
   }
 
-  public addTracksToExistingAlbum(userId: ObjectId, albumId: ObjectId, tracksObjects: any[], trackFiles: any[]){
+  public addTracksToExistingAlbum(userId: ObjectId, albumId: ObjectId, trackObjects: any[], trackFiles: any[]): Promise<any> {
     /*
     Allows user to add new tracks to an already uploaded album  
     */
+   return new Promise( async (resolve, reject) => {
+     try {
+      const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumId.toString())
+      const album = await this.albumModel.findById(albumId)
+      const user = await this.userModel.findById(userId)
+      trackObjects.forEach(async (trackObject, index) => {
+        const createdTrack = await this.trackModel.create({
+          authorId: userId,
+          authorName: user.username,
+          imageUrl: album.undercoverUrl,
+          genres: album.genres,
+          isSingleTrack: false,
+          trackUrl: trackUrls[index],
+          album: album._id,
+          title: trackObject.title,
+          isPremium: trackObject.isPremium,
+          inspiredArtists: trackObject.inspiredArtists
+        })
+        console.log('createdTrack :', createdTrack)
+      })
+      resolve('Tracks successfully added to album')
+     } catch(err) {
+       reject({code: 500, msg: err.msg})
+     }
+   })
   }
 
   public uploadAlbum(userId: ObjectId, albumObject: any, trackFiles: any[], undercoverFile: any): Promise<any> {
@@ -73,6 +108,7 @@ export default class UploadService {
       const albumTitle = albumObject.title
       const tracksObjects: any = albumObject.tracks
       try {
+        if(!undercoverFile) reject({code: 400, msg: 'Undercover image not provided'})
         const undercoverUrl = await this.s3Service.uploadAlbumUnderCover(userId.toString(), undercoverFile)
         var albumModel: any = await this.albumModel.create({
           title: albumTitle,
@@ -90,13 +126,14 @@ export default class UploadService {
             genres: albumObject.genres,
             isSingleTrack: false,
             trackUrl: trackUrls[index],
+            album: albumModel._id,
             title: track.title,
             isPremium: track.isPremium,
             inspiredArtists: track.inspiredArtists
           })
           console.log('Track created :', trackCreated)
-          resolve('Album was uploaded successfully')
         })
+        resolve('Album was uploaded successfully')
       } catch(err) {
         reject({code: err.code, msg: err.msg})
       }

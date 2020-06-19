@@ -9,7 +9,9 @@ export interface ITrack extends Document {
   authorId: mongoose.Schema.Types.ObjectId
   authorName: string
 
-  audiofile: mongoose.Schema.Types.ObjectId
+  trackUrl: string
+
+  imageUrl: string
 
   inspiredArtists: string[]
 
@@ -25,9 +27,7 @@ export interface ITrack extends Document {
 
   numberOfListens: Number 
 
-  image: mongoose.Schema.Types.ObjectId[]
-
-  albums: mongoose.Schema.Types.ObjectId[]
+  album: mongoose.Schema.Types.ObjectId
 
   title: string
 }

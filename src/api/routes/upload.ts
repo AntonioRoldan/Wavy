@@ -3,7 +3,6 @@
   All rights reserved 
 */
 
-
 /* 
 This route handles file uploads to S3 
 regex for password longer than 6 characters containing at least one weird character 
@@ -11,9 +10,11 @@ regex for password longer than 6 characters containing at least one weird charac
  react-material-ui-form-validator 
 */
 import multer from 'multer'
+import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import UploadService from '../../services/upload'
 import { Container } from 'typedi'
+
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'
 
@@ -72,25 +73,35 @@ export default (app: Router) => {
     , "hasImage": false}]} 
     req.files = {tracks: [], images: []}
     */
+    if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
     const uploadService = Container.get(UploadService)
     const authServiceInstance = Container.get(AuthService)
-    if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const tracksObject = JSON.parse(req.body.tracks)
-    if(req.files['tracks'].length != tracksObject.tracks.length || req.files['images'].length != tracksObject.tracks.length) 
+    const trackObjects = JSON.parse(req.body.tracks)
+    if(req.files['tracks'].length != trackObjects.tracks.length || req.files['images'].length != trackObjects.tracks.length) 
     { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await uploadService.uploadTracks(userId, tracksObject.tracks, req.files['tracks'], req.files['images'])
+      const successMessage = await uploadService.uploadTracks(userId, trackObjects.tracks, req.files['tracks'], req.files['images'])
       responseHandle(res, successMessage)
     } catch(err) {
       errorHandle(res, err.message, err.code)
     }
   })
 
-  route.post('/tracks/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
-  (req: Request, res: Response) => {
-    // Add or edit an image of a track
+  route.put('/tracks/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
+  async (req: Request, res: Response) => {
+    if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+    const uploadService = Container.get(UploadService)
+    const authServiceInstance = Container.get(AuthService)
+    try {
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const imageUrl = await uploadService.uploadImageForExistingTrack(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
+      responseHandle(res, {imageUrl: imageUrl})
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
   route.delete('/tracks/:id', (req: Request, res: Response) => {
@@ -123,8 +134,24 @@ export default (app: Router) => {
   })
 
   route.post('/album/:id', tracksToExistingAlbumUpload, async (req: Request, res: Response) => {
+    /* 
+    req.body.tracks = {tracks: [{
+    "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": false
+    , "hasImage": false}]} 
+    req.files = {tracks: [], images: []}
+    */
     if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-
+    const uploadService = Container.get(UploadService)
+    const authServiceInstance = Container.get(AuthService)
+    const trackObjects = JSON.parse(req.body.tracks)
+    try {
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const successMessage = await uploadService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, req.files)
+      responseHandle(res, successMessage)
+    } catch(err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
   route.delete('/album/:id', (req: Request, res: Response) => {
@@ -133,7 +160,7 @@ export default (app: Router) => {
 
   route.delete('/album/:trackId', (req: Request, res: Response) => {
     /* Delete a song from an album 
-    /*
+    */
   })
 
   route.post('/album/:albumId/:songId', (req: Request, res: Response) => {
