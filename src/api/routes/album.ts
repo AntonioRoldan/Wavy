@@ -12,7 +12,8 @@ regex for password longer than 6 characters containing at least one weird charac
 import multer from 'multer'
 import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
-import UploadService from '../../services/upload'
+import AlbumService from '../../services/album'
+import TrackService from '../../services/track'
 import { Container } from 'typedi'
 
 const isAuth = require('../middleware/isAuth')
@@ -74,7 +75,7 @@ export default (app: Router) => {
     req.files = {tracks: [], images: []}
     */
     if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const uploadService = Container.get(UploadService)
+    const trackService = Container.get(TrackService)
     const authServiceInstance = Container.get(AuthService)
     const trackObjects = JSON.parse(req.body.tracks)
     if(req.files['tracks'].length != trackObjects.tracks.length || req.files['images'].length != trackObjects.tracks.length) 
@@ -82,7 +83,7 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await uploadService.uploadTracks(userId, trackObjects.tracks, req.files['tracks'], req.files['images'])
+      const successMessage = await trackService.uploadTracks(userId, trackObjects.tracks, req.files['tracks'], req.files['images'])
       responseHandle(res, successMessage)
     } catch(err) {
       errorHandle(res, err.message, err.code)
@@ -92,12 +93,12 @@ export default (app: Router) => {
   route.put('/tracks/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
   async (req: Request, res: Response) => {
     if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const uploadService = Container.get(UploadService)
+    const trackService = Container.get(TrackService)
     const authServiceInstance = Container.get(AuthService)
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const imageUrl = await uploadService.uploadImageForExistingTrack(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
+      const imageUrl = await trackService.uploadImageForExistingTrack(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
       responseHandle(res, {imageUrl: imageUrl})
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -118,7 +119,7 @@ export default (app: Router) => {
     req.files : {undercover: [], tracks: []}
     */ 
     if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const uploadService = Container.get(UploadService)
+    const albumService = Container.get(AlbumService)
     const authServiceInstance = Container.get(AuthService)
     const albumObject = JSON.parse(req.body.album)
     if(req.files['tracks'].length != albumObject.tracks.length) 
@@ -126,7 +127,7 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await uploadService.uploadAlbum(userId, albumObject, req.files['tracks'], req.files['undercover'][0])
+      const successMessage = await albumService.uploadAlbum(userId, albumObject, req.files['tracks'], req.files['undercover'][0])
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
@@ -141,13 +142,13 @@ export default (app: Router) => {
     req.files = {tracks: [], images: []}
     */
     if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const uploadService = Container.get(UploadService)
+    const albumService = Container.get(AlbumService)
     const authServiceInstance = Container.get(AuthService)
     const trackObjects = JSON.parse(req.body.tracks)
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await uploadService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, req.files)
+      const successMessage = await albumService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, req.files)
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
