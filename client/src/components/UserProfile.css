@@ -1,0 +1,24 @@
+.main {
+  position: relative;
+  top: 60%;
+}
+
+/* .header {
+} */
+
+.profile {
+  display: flex;
+  width: 25%;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+}
+
+.avatarImage {
+  border-radius: 50%;
+}
+
+.welcomeMessage {
+  display: inline-block;
+  font-weight: bold;
+}

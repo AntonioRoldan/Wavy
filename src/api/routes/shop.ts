@@ -1,0 +1,1 @@
+// This one manages paid services, beats, tutorials, filtering shop results and payments

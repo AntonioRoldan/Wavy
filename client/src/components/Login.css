@@ -1,0 +1,16 @@
+.login-signup-recommendation {
+  color: gray;
+}
+
+.login-paper {
+  position: relative;
+  top: 80%;
+  margin-top: 10em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-text-field {
+  margin-bottom: 10px;
+}

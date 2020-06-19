@@ -1,0 +1,93 @@
+.card {
+  border: 1px solid #5c5d67;
+  width: 150px;
+  outline: 0;
+  height: 230px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+}
+
+.track-image {
+  position: relative;
+  height: 130px;
+  width: 100%;
+  outline: 0;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  object-fit: cover;
+  display: block;
+  margin-top: 5x;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.track-name {
+  color: #dedee0;
+  font-family: Nunito;
+  font-weight: lighter;
+  margin-left: 8px;
+  font-size: 15px;
+}
+
+.track-name:hover {
+  color: #dedee0;
+  filter: brightness(150%);
+  text-decoration: none;
+}
+
+.artist-name {
+  position: relative;
+  margin-left: 8px;
+  color: #7d7d85;
+  font-family: Nunito;
+  font-size: 15px;
+}
+
+.artist-name:hover {
+  color: #7d7d85;
+  filter: brightness(150%);
+  text-decoration: none;
+}
+
+.track-price {
+  position: relative;
+  color: #d29edc;
+  font-size: 15px;
+}
+
+.track-info {
+  position: relative;
+  color: #d29edc;
+  font-size: 15px;
+}
+
+.buy-button {
+  position: relative;
+  background: #3d3c49;
+  border: 0;
+  font-size: 13px;
+  left: 8px;
+  width: 50px;
+  height: 30px;
+}
+
+.buy-button:hover {
+  background: #3d3c49;
+  filter: brightness(150%);
+}
+
+.button-text {
+  position: relative;
+  bottom: 1px;
+}
+
+.track-info {
+  position: relative;
+  right: 8px;
+}
+
+.footer {
+  position: relative;
+  margin-top: 18px;
+}

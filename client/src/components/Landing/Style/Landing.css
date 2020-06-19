@@ -1,0 +1,45 @@
+.welcome-block  {
+  position: relative;
+  margin-bottom: 800px;
+}
+
+.welcome-button-link {
+  color: rgb(0, 0, 0, 0);
+  text-decoration: none;
+}
+
+.info-section-title {
+  position: relative;
+  display: inline-block;
+  left: 30px;
+  width: 1300px;
+  height: 82px;
+  font-family: Nunito;
+  font-size: 60px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -1.44px;
+  text-align: center;
+  color: #f5f5f9;
+  margin-bottom: 155px;
+  margin-top: 150px;
+}
+
+.welcome-buttons {
+  position: relative;
+  bottom: 90px;
+  margin-left: 3.5%;
+}
+
+#welcome-button {
+  width: 199px;
+  height: 60px;
+  border-radius: 30px;
+  border: solid 0.8px #1d1c2b;
+  background-color: #ffbcff;
+  font-size: 32.4px;
+  color: #1d1c2b;
+  margin: 2%;
+}

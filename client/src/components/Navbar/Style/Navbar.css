@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+
+.nav-center-items {
+  position: relative;
+  top: 15px;
+  left: 30px;
+}
+
+input[type='text'],
+.search {
+  border: 1px solid #ffffff;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+input[type='text'],
+.search {
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.nav-end-items {
+  position: relative;
+  bottom: 20px;
+  left: 1000px;
+}
+
+.nav-items {
+  position: relative;
+  top: 10px;
+}
+
+.toggler {
+  background: #ffbcff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-navbar {
+  text-align: center;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.search {
+  width: 200px;
+  height: 30px;
+  background: #2a293f;
+  border-radius: 10px;
+  outline: none;
+  padding-right: 50px;
+}
+
+.search:focus {
+  background: #2a293f;
+  border-right: none;
+  box-shadow: none;
+}
+
+.search-on-scroll {
+  background: #ffd8ff;
+  outline: none;
+  width: 200px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  padding-right: 50px;
+}
+
+.search-on-scroll:focus {
+  background: #ffd8ff;
+  border-right: none;
+}
+
+.search-button {
+  height: 30px;
+  border: 1px solid #ffffff;
+  border-radius: 10px;
+  color: #ced4da;
+  border-left: none;
+  background: #2a293f;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .flex-end-buttons {
+  justify-self: end;
+} */
+
+.search-button:hover {
+  background: #2a293f;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  border-left: none;
+}
+
+.search-button-on-scroll {
+  background: #ffd8ff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  border: 1px solid #ffffff;
+  border-radius: 10px;
+  color: #ced4da;
+  border-left: none;
+}
+
+.search-button-on-scroll:hover {
+  background: #ffd8ff;
+  color: #ffffff;
+  border: 1px solid #ced4da;
+  text-align: center;
+  border-left: none;
+}
+
+.options-button {
+  position: relative;
+  color: #ffffff;
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.options-button:hover {
+  color: #a5abf1;
+  background: transparent;
+  border: none;
+}
+
+.options-button:focus {
+  background: transparent !important;
+  border: none;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#item-center {
+  margin: 5px;
+}
+
+.avatar {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+}
+
+.navbar-logo {
+  width: 136px;
+  height: 74px;
+  font-family: Nunito;
+  font-size: 54px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -1.3px;
+  text-align: center;
+  color: #ff97ff;
+}
+
+.navbar-logo-on-scroll {
+  width: 136px;
+  height: 74px;
+  font-family: Nunito;
+  font-size: 54px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -1.3px;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* #separator {
+  position: relative;
+  top: 5px;
+  left: 10px;
+  display: inline-block;
+  width: 0;
+  height: 50px;
+  border-left: 0.15px solid #ccc;
+  border-right: 0.15px solid #ccc;
+} */
+
+.auth-buttons {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+#auth-button {
+  position: relative;
+  width: 73px;
+  height: 41px;
+  border-radius: 7.4px;
+  border: solid 1px #ffbcff;
+  background-color: #1d1c2b;
+  color: #ffbcff;
+  font-family: Nunito, sans-serif;
+}
+
+#auth-button:hover {
+  width: 73px;
+  height: 41px;
+  border-radius: 7.4px;
+  border: solid 1px #1d1c2b;
+  background-color: #ffbcff;
+  color: #1d1c2b;
+}
+
+#logged-in-link {
+  margin: 10px;
+  color: #fff5ff;
+  text-decoration: none;
+  font-family: Nunito, sans-serif;
+}
+
+#logged-in-link:hover {
+  color: #a5abf1;
+}
+
+#auth-link {
+  margin: 10px;
+  color: rgb(0, 0, 0, 0);
+  text-decoration: none;
+}
+
+#auth-link:hover {
+  color: rgb(0, 0, 0, 0);
+}
