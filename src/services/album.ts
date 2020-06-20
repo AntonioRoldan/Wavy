@@ -93,11 +93,34 @@ export default class AlbumService {
 
   // Update 
 
-  public editAlbumUndercover() {
-
+  public editAlbumUndercover(userId: string, trackId: ObjectId, undercoverFile: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try{
+        const album = await this.albumModel.findById(trackId)
+        const deletedFile = await this.s3Service.deleteFile(album.undercoverUrl)
+        console.log('deletedFile :', deletedFile)
+        const undercoverUrl = await this.s3Service.uploadAlbumUnderCover(userId, undercoverFile)
+        album.undercoverUrl = undercoverUrl
+        const modifiedAlbum = await album.save()
+        console.log('modifiedAlbum :', modifiedAlbum)
+        resolve(modifiedAlbum)
+      } catch(err){ 
+        reject({code: err.code, msg: err.message | err.msg})
+      }
+    })
   }
-  public editAlbumName() {
-
+  public editAlbumName(albumId: string, albumName: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const album = await this.albumModel.findById(albumId)
+        album.title = albumName
+        const modifiedTrack = await album.save()
+        console.log('modifiedTrack :', modifiedTrack)
+        resolve(albumName)
+      } catch (err){
+        reject({code: 500, msg: err.message | err.msg})
+      }
+    })
   }
 
   // MARK: Delete methods 

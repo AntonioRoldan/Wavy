@@ -10,6 +10,7 @@ import aws from 'aws-sdk'
 import fs from 'fs'
 import { ObjectId } from 'bson'
 import { v4 as uuidv4 } from 'uuid'
+const AmazonS3URI = require('amazon-s3-uri')
 import mime from 'mime-types'
 
 /* 
@@ -169,6 +170,31 @@ export default class S3Service {
         if(err) reject({code: 500, msg: err.message})
         fs.unlinkSync(imageFile.path) // We empty the temp folder where we stored the image in multer's middleware
         resolve(data.Location)
+      })
+    })
+  }
+
+  public deleteFile(fileUrl: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const { region, bucket, key } = AmazonS3URI(fileUrl)
+      const params: any = {
+        Bucket: bucket,
+        key: key
+      }
+      aws.config.update({
+        accessKeyId: config.s3AccessKeyID,
+        secretAccessKey: config.s3SecretAccessKey,
+        region: config.s3Region,
+      })
+      const s3 = new aws.S3({
+        credentials: {
+          accessKeyId: config.s3AccessKeyID,
+          secretAccessKey: config.s3SecretAccessKey
+        }
+      })
+      s3.deleteObject(params, (err, data) => {
+        if(err) reject({code: 500, msg: err.message})
+        resolve(data)
       })
     })
   }

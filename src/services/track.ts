@@ -70,9 +70,17 @@ export default class TrackService {
 
   // MARK: Update 
 
-  public editTrackName(trackId: ObjectId): Promise<any> {
-    return new Promise((resolve, reject) => {
-
+  public editTrackName(trackId: ObjectId, trackName: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const track = await this.trackModel.findById(trackId)
+        track.title = trackName
+        const modifiedTrack = await track.save()
+        console.log('modifiedTrack :', modifiedTrack)
+        resolve(trackName)
+      } catch (err){
+        reject({code: 500, msg: err.message | err.msg})
+      }
     })
   }
 
@@ -81,8 +89,11 @@ export default class TrackService {
       try {
         const track = await this.trackModel.findById(trackId)
         if(!track.isSingleTrack) reject({code: 400, msg: 'Change album undercover to change this track image'})
-        if(track.imageUrl) { // If there is an image already 
-          // TODO create s3 service method to delete the image then add a new image 
+        if(track.imageUrl) { 
+          const track = await this.trackModel.findById(trackId)
+          if(!track) reject({code: 400, msg: 'This track does not exist'})
+          const deletedImage = await this.s3Service.deleteFile(track.imageUrl)
+          console.log('deletedImage :', deletedImage)
           const imageUrl = await this.s3Service.uploadTracksImages(userId, [imageFile])
           track.imageUrl = imageUrl[0]
           const updatedTrack = await track.save()

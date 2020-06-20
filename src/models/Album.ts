@@ -11,7 +11,7 @@ const albumSchema = new Schema({
   title: {
     type: String,
     required: true,
-    minlength: 2,
+    minlength: 1,
     trim: true
   },
   author: { // We create an array to allow collaborations

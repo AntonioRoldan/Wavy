@@ -8,7 +8,7 @@ import mongoose, { Document } from 'mongoose'
 export interface IAlbum extends Document {
   title: string
   author: mongoose.Schema.Types.ObjectId
-  undercoverUrl: String
+  undercoverUrl: string
   isPremium: Boolean
   genres: string[]
   releaseDate: Date

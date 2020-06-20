@@ -10,6 +10,7 @@ regex for password longer than 6 characters containing at least one weird charac
  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*:])(?=.{6,})/.test(value)
  react-material-ui-form-validator 
 */
+
 import multer from 'multer'
 import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
