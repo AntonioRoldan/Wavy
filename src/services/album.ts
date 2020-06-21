@@ -6,6 +6,7 @@
 
 import { Service, Inject } from 'typedi'
 import S3Service from './s3'
+import mongoose from 'mongoose'
 import TrackService from './track'
 import { ObjectId } from 'bson'
 
@@ -14,6 +15,8 @@ export default class AlbumService {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
     private s3Service: S3Service,
+
+    private trackService: TrackService,
     @Inject('trackModel') private trackModel: Models.TrackModel,
     @Inject('albumModel') private albumModel: Models.AlbumModel
   ) {}
@@ -124,5 +127,25 @@ export default class AlbumService {
   }
 
   // MARK: Delete methods 
-
+  public deleteAlbum(albumId: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const tracksToBeDeleted = await this.trackModel.find({album: mongoose.Types.ObjectId(albumId)})
+        if(!tracksToBeDeleted) reject({code: 400, msg: 'Album does not exist'})
+        tracksToBeDeleted.forEach(async track => {
+          this.trackService.deleteTrack(track._id)
+          const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
+          console.log('deletedMongoTrack :', deletedMongoTrack)
+        })
+        const album = await this.albumModel.findById(mongoose.Types.ObjectId(albumId))
+        const deletedUndercover = await this.s3Service.deleteFile(album.undercoverUrl)
+        console.log('deletedUndercover :', deletedUndercover)
+        const deletedAlbum = await this.albumModel.deleteOne({_id: mongoose.Types.ObjectId(albumId)})
+        console.log('deletedAlbum :', deletedAlbum)
+        resolve('Album was deleted')
+      } catch(err){
+        reject({code:500, msg: err.msg | err.message})
+      }
+    })
+  }
 }

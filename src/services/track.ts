@@ -113,5 +113,20 @@ export default class TrackService {
   }
 
   // MARK: Delete
-
+  public deleteTrack(trackId: string): Promise<any> {
+    return new Promise( async (resolve, reject) => {
+      try {
+        const track = await this.trackModel.findById(trackId)
+        const deletedTrackImage = await this.s3Service.deleteFile(track.imageUrl)
+        console.log('deletedTrackImage :', deletedTrackImage)
+        const deletedTrackAudio = await this.s3Service.deleteFile(track.trackUrl)
+        console.log('deletedTrackAudio :', deletedTrackAudio)
+        const deletedTrack =  await this.trackModel.deleteOne(trackId)
+        console.log('deletedTrack :', deletedTrack)
+        resolve('Track was deleted')
+      } catch(err) {
+        reject({code: 500, msg: err.msg})
+      }
+    })
+  }
 }
