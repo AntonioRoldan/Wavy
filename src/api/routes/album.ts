@@ -80,12 +80,13 @@ export default (app: Router) => {
     const trackService = Container.get(TrackService)
     const authServiceInstance = Container.get(AuthService)
     const trackObjects = JSON.parse(req.body.tracks)
-    if(req.files['tracks'].length != trackObjects.tracks.length || req.files['images'].length != trackObjects.tracks.length) 
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
+    if(files['tracks'].length != trackObjects.tracks.length || files['images'].length != trackObjects.tracks.length) 
     { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await trackService.uploadTracks(userId, trackObjects.tracks, req.files['tracks'], req.files['images'])
+      const successMessage = await trackService.uploadTracks(userId, trackObjects.tracks, files['tracks'], files['images'])
       responseHandle(res, successMessage)
     } catch(err) {
       errorHandle(res, err.message, err.code)
@@ -120,16 +121,17 @@ export default (app: Router) => {
     }]}
     req.files : {undercover: [], tracks: []}
     */ 
-    if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
+    if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
     const albumService = Container.get(AlbumService)
     const authServiceInstance = Container.get(AuthService)
     const albumObject = JSON.parse(req.body.album)
-    if(req.files['tracks'].length != albumObject.tracks.length) 
+    if(files['tracks'].length != albumObject.tracks.length) 
     { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.uploadAlbum(userId, albumObject, req.files['tracks'], req.files['undercover'][0])
+      const successMessage = await albumService.uploadAlbum(userId, albumObject, files['tracks'], files['undercover'][0])
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
@@ -143,14 +145,15 @@ export default (app: Router) => {
     , "hasImage": false}]} 
     req.files = {tracks: [], images: []}
     */
-    if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+    const files = req.files as Express.Multer.File[]
+    if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
     const albumService = Container.get(AlbumService)
     const authServiceInstance = Container.get(AuthService)
     const trackObjects = JSON.parse(req.body.tracks)
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, req.files)
+      const successMessage = await albumService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, files)
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)

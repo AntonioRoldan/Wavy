@@ -115,11 +115,11 @@ export default class S3Service {
     })
   }
 
-  public uploadSingleTrack(userId: string, trackFile: any, albumId: string = ''): Promise<any> {
+  public uploadSingleTrack(userId: string, trackFile: any, albumId: string = '', beatId: string = ''): Promise<any> {
     return new Promise((resolve, reject) => {
       const trackId = uuidv4()
       var key = ''
-      key = albumId ? `userAlbums/${userId}/audios/${albumId}/${trackId}` : `userTracks/${userId}/audios/${trackId}`
+      key = albumId ? `userAlbums/${userId}/audios/${albumId}/${trackId}` : beatId ? `userBeats/${userId}/audios/${beatId}/${trackId}` : `userTracks/${userId}/audios/${trackId}`
       aws.config.update({
         accessKeyId: config.s3AccessKeyID,
         secretAccessKey: config.s3SecretAccessKey,
@@ -215,7 +215,7 @@ export default class S3Service {
     })
   }
 
-  public uploadTracks(userId: string, trackFiles: any[], albumId: string = ''): Promise<any> {
+  public uploadTracks(userId: string, trackFiles: any[], albumId: string = '', beatId: string = ''): Promise<any> {
     /* 
       Returns an array of s3 urls 
     */

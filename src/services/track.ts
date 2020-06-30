@@ -25,6 +25,7 @@ export default class TrackService {
     imageFiles: any[]
   ): Promise<any> {
     return new Promise(async (resolve, reject) => {
+      // TODO: Store audio file duration 
       try {
         var trackIndex = 0 // READ THIS COMMENT TO UNDERSTAND THIS VARIABLE If we have tracks with no images we increase this index everytime a track with an image has been found to access its corresponding image url in the array while iterating through other track objects that may not have images
         const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles)
