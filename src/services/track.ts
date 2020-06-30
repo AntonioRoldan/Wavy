@@ -69,6 +69,18 @@ export default class TrackService {
 
   // MARK: Read 
 
+  public getUserTracks(userId: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      
+    })
+  }
+
+  public searchTracks(search: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+
+    })
+  }
+
   // MARK: Update 
 
   public editTrackName(trackId: ObjectId, trackName: string): Promise<any> {

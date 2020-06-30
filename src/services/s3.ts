@@ -226,7 +226,7 @@ export default class S3Service {
       } 
       trackFiles.forEach( async trackFile => {
         try {
-          const trackUrl = albumId ? await this.uploadSingleTrack(userId, trackFile, albumId) : await this.uploadSingleTrack(userId, trackFile)
+          const trackUrl = albumId ? await this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? await this.uploadSingleTrack(userId, trackFile, beatId) : await this.uploadSingleTrack(userId, trackFile)
           trackUrls.push(trackUrl)
         } catch(err){
           reject({code: 500, msg: err.message})

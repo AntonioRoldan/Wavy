@@ -82,7 +82,7 @@ export default class AlbumService {
             trackUrl: trackUrls[index],
             album: albumModel._id,
             title: track.title,
-            isPremium: track.isPremium,
+            isPremium: albumModel.isPremium ? true : track.isPremium,
             inspiredArtists: track.inspiredArtists,
             type: 'album'
           })
@@ -145,7 +145,7 @@ export default class AlbumService {
         const author = await this.userModel.findById(albumDocument.author)
         const albumTracks = await this.trackModel.find({album: albumDocument._id})
         albumData.tracks = albumTracks.map(track => {
-          return {title: track.title, audio: track.trackUrl}
+          return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium}
         })
         albumData.album = {title: albumDocument.title, author: author.username, undercover: albumDocument.undercoverUrl}
         resolve(albumData)
