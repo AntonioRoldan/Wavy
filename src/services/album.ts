@@ -35,25 +35,25 @@ export default class AlbumService {
         const createdTrack = await this.trackModel.create({
           authorId: userId,
           authorName: user.username,
-          imageUrl: album.undercoverUrl,
+          imageUrl: album.coverUrl,
           genres: album.genres,
           isSingleTrack: false,
           trackUrl: trackUrls[index],
           album: album._id,
           title: trackObject.title,
-          isPremium: trackObject.isPremium,
-          inspiredArtists: trackObject.inspiredArtists
+          isPremium: album.isPremium ? true : trackObject.isPremium,
+          inspiredArtists: trackObject.inspiredArtists,
+          type: 'album'
         })
         console.log('createdTrack :', createdTrack)
       })
       resolve('Tracks successfully added to album')
      } catch(err) {
-       reject({code: 500, msg: err.msg})
-     }
+      reject({code: err.code | 500, msg: err.msg | err.message})     }
    })
   }
 
-  public uploadAlbum(userId: ObjectId, albumObject: any, trackFiles: any[], undercoverFile: any): Promise<any> {
+  public uploadAlbum(userId: ObjectId, albumObject: any, trackFiles: any[], coverFile: any): Promise<any> {
         //TODO: Test this 
 
     return new Promise( async (resolve, reject) => {
@@ -62,12 +62,12 @@ export default class AlbumService {
       const albumTitle = albumObject.title
       const tracksObjects: any = albumObject.tracks
       try {
-        if(!undercoverFile) reject({code: 400, msg: 'Undercover image not provided'})
-        const undercoverUrl = await this.s3Service.uploadAlbumUnderCover(userId.toString(), undercoverFile)
+        if(!coverFile) reject({code: 400, msg: 'Cover image not provided'})
+        const coverUrl = await this.s3Service.uploadAlbumCover(userId.toString(), coverFile)
         var albumModel: any = await this.albumModel.create({
           title: albumTitle,
           author: albumAuthor,
-          undercoverUrl: undercoverUrl,
+          coverUrl: coverUrl,
           genres: albumObject.genres,
           isPremium: albumModel.isPremium
         })
@@ -76,7 +76,7 @@ export default class AlbumService {
           const trackCreated = await this.trackModel.create({
             authorId: userId,
             authorName: albumAuthor,
-            imageUrl: undercoverUrl,
+            imageUrl: coverUrl,
             genres: albumObject.genres,
             isSingleTrack: false,
             trackUrl: trackUrls[index],
@@ -105,7 +105,7 @@ export default class AlbumService {
         const searchMatchingAlbumsDocuments = await this.albumModel.find({title: new RegExp(search, 'i')})
         matchingSearchAlbums = searchMatchingAlbumsDocuments.map(async album => {
           const author = await this.userModel.findById(album.author)
-          return { id: album._id,  undercover: album.undercoverUrl, title: album.title, author: author.username}
+          return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username}
         })
         console.log('matchingSearchAlbums :', matchingSearchAlbums)
         resolve(matchingSearchAlbums)
@@ -123,7 +123,7 @@ export default class AlbumService {
         const author = await this.userModel.findById(userId)
         const albumsDocuments = await this.albumModel.find({author: userId})
         userAlbums = albumsDocuments.map(album => {
-          return { id: album._id,  undercover: album.undercoverUrl, title: album.title, author: author.username}
+          return { id: album._id,  cover: album.coverUrl, title: album.title, author: author.username}
         })
         resolve(userAlbums)
       }catch(err){
@@ -140,14 +140,14 @@ export default class AlbumService {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
-        let albumData: any = {} // {album: {title: , author:, undercover: }, tracks: [{title: , audio: }]}
+        let albumData: any = {} // {album: {title: , author:, cover: }, tracks: [{title: , audio: }]}
         const albumDocument = await this.albumModel.findById(albumId)
         const author = await this.userModel.findById(albumDocument.author)
         const albumTracks = await this.trackModel.find({album: albumDocument._id})
         albumData.tracks = albumTracks.map(track => {
           return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium}
         })
-        albumData.album = {title: albumDocument.title, author: author.username, undercover: albumDocument.undercoverUrl}
+        albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl}
         resolve(albumData)
       } catch(err) {
         reject({code: 500, msg: err.message | err.msg})
@@ -157,15 +157,15 @@ export default class AlbumService {
 
   // Update 
 
-  public editAlbumUndercover(userId: string, trackId: ObjectId, undercoverFile: any): Promise<any> {
+  public editAlbumCover(userId: string, albumId: ObjectId, coverFile: any): Promise<any> {
     //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
-        const album = await this.albumModel.findById(trackId)
-        const deletedFile = await this.s3Service.deleteFile(album.undercoverUrl)
+        const album = await this.albumModel.findById(albumId)
+        const deletedFile = await this.s3Service.deleteFile(album.coverUrl)
         console.log('deletedFile :', deletedFile)
-        const undercoverUrl = await this.s3Service.uploadAlbumUnderCover(userId, undercoverFile)
-        album.undercoverUrl = undercoverUrl
+        const coverUrl = await this.s3Service.uploadAlbumCover(userId, coverFile)
+        album.coverUrl = coverUrl
         const modifiedAlbum = await album.save()
         console.log('modifiedAlbum :', modifiedAlbum)
         resolve(modifiedAlbum)
@@ -180,8 +180,8 @@ export default class AlbumService {
       try {
         const album = await this.albumModel.findById(albumId)
         album.title = albumName
-        const modifiedTrack = await album.save()
-        console.log('modifiedTrack :', modifiedTrack)
+        const modifiedAlbum = await album.save()
+        console.log('modifiedAlbum :', modifiedAlbum)
         resolve(albumName)
       } catch (err){
         reject({code: 500, msg: err.message | err.msg})
@@ -202,8 +202,8 @@ export default class AlbumService {
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })
         const album = await this.albumModel.findById(mongoose.Types.ObjectId(albumId))
-        const deletedUndercover = await this.s3Service.deleteFile(album.undercoverUrl)
-        console.log('deletedUndercover :', deletedUndercover)
+        const deletedCover = await this.s3Service.deleteFile(album.coverUrl)
+        console.log('deletedCover :', deletedCover)
         const deletedAlbum = await this.albumModel.deleteOne({_id: mongoose.Types.ObjectId(albumId)})
         console.log('deletedAlbum :', deletedAlbum)
         resolve('Album was deleted')

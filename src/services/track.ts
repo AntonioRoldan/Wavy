@@ -71,13 +71,33 @@ export default class TrackService {
 
   public getUserTracks(userId: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      
+      try {
+        let userTracks =[] 
+        const userTracksDocuments = await this.trackModel.find({authorId: userId})
+        userTracks = userTracksDocuments.filter(track => {
+          return track.type != 'drumkit' && track.type != 'loop'
+        }).map(track => {
+          return {title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl, type: track.type}
+        }) 
+        resolve(userTracks)
+      } catch(err){
+        reject({code: 500, msg: err.message | err.msg})
+      }
     })
   }
 
   public searchTracks(search: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
-
+      try {
+        let matchingTracks = []
+        const matchingTracksDocuments = await this.trackModel.find({title: new RegExp(search, 'i')})
+        matchingTracks = matchingTracksDocuments.map(track => {
+          return {title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl}
+        })
+        resolve(matchingTracks)
+      } catch(err){
+        reject({code: 500, msg: err.message | err.msg})
+      }
     })
   }
 

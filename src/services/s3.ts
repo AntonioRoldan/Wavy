@@ -86,7 +86,7 @@ export default class S3Service {
     })
   }
 
-  public uploadAlbumUnderCover(userId: string, underCoverFile: any): Promise<any> {
+  public uploadAlbumCover(userId: string, coverFile: any): Promise<any> {
     return new Promise((resolve, reject) => {
       const underCoverId = uuidv4()
       var key = `userAlbums/${userId}/undercovers/${underCoverId}`
@@ -104,12 +104,12 @@ export default class S3Service {
       var params = {
         ACL: 'public-read',
         Bucket: config.s3BucketName,
-        Body: fs.createReadStream(underCoverFile.path), // TODO: We might have to create a buffer to store the audio file we will test this
+        Body: fs.createReadStream(coverFile.path), // TODO: We might have to create a buffer to store the audio file we will test this
         Key: key, // There will be a userAvatar with a user subfolder where the image id will be stored
       }
       s3.upload(params, (err: Error, data: any) => {
         if(err) reject({code: 500, msg: err.message})
-        fs.unlinkSync(underCoverFile.path) // We empty the temp folder where we stored the image in multer's middleware
+        fs.unlinkSync(coverFile.path) // We empty the temp folder where we stored the image in multer's middleware
         resolve(data.Location)
       })
     })
@@ -226,13 +226,42 @@ export default class S3Service {
       } 
       trackFiles.forEach( async trackFile => {
         try {
-          const trackUrl = albumId ? await this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? await this.uploadSingleTrack(userId, trackFile, beatId) : await this.uploadSingleTrack(userId, trackFile)
+          const trackUrl = albumId ? await this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? await this.uploadSingleTrack(userId, trackFile, undefined, beatId) : await this.uploadSingleTrack(userId, trackFile)
           trackUrls.push(trackUrl)
         } catch(err){
           reject({code: 500, msg: err.message})
         }
       })
       resolve(trackUrls)
+    })
+  }
+
+  public uploadBeatCover(userId: string, coverFile: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const coverId = uuidv4()
+      var key = `userBeats/${userId}/covers/${coverId}`
+      aws.config.update({
+        accessKeyId: config.s3AccessKeyID,
+        secretAccessKey: config.s3SecretAccessKey,
+        region: config.s3Region,
+      })
+      const s3 = new aws.S3({
+        credentials: {
+          accessKeyId: config.s3AccessKeyID,
+          secretAccessKey: config.s3SecretAccessKey
+        }
+      })
+      var params = {
+        ACL: 'public-read',
+        Bucket: config.s3BucketName,
+        Body: fs.createReadStream(coverFile.path), // TODO: We might have to create a buffer to store the audio file we will test this
+        Key: key, // There will be a userAvatar with a user subfolder where the image id will be stored
+      }
+      s3.upload(params, (err: Error, data: any) => {
+        if(err) reject({code: 500, msg: err.message})
+        fs.unlinkSync(coverFile.path) // We empty the temp folder where we stored the image in multer's middleware
+        resolve(data.Location)
+      })
     })
   }
 }

@@ -11,6 +11,7 @@ import { IAlbum } from '../interfaces/IAlbum'
 import { IPlaylist } from '../interfaces/IPlaylist'
 import { ISession } from '../interfaces/ISession'
 import { IToken } from '../interfaces/IToken'
+import { IBeat } from '../interfaces/IBeat'
 
 declare global {
   namespace Models {
@@ -25,6 +26,8 @@ declare global {
     export type SessionModel = Model < ISession & Document >
 
     export type TokenModel = Model < IToken & Document >
+
+    export type BeatModel = Model < IBeat & Document > 
 
   }
 }

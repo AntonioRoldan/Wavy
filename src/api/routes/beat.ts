@@ -14,7 +14,7 @@ regex for password longer than 6 characters containing at least one weird charac
 import multer from 'multer'
 import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
-import AlbumService from '../../services/album'
+import BeatService from '../../services/beat'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
 
@@ -60,14 +60,14 @@ const addTracksToExistingAlbumFilter = (req: Request, file: any, cb: any) => {
 
 export default (app: Router) => {
   var upload = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: tracksFileFilter})
-  var albumUpload: any = upload.fields([{name: 'tracks', maxCount: 10}, {name: 'cover', maxCount: 1}])
-  var tracksToExistingAlbumUpload: any = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: addTracksToExistingAlbumFilter}).array('tracks', 10)
+  var beatUpload: any = upload.fields([{name: 'tracks', maxCount: 10}, {name: 'cover', maxCount: 1}])
+  var tracksToExistingBeatUpload: any = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: addTracksToExistingAlbumFilter}).array('tracks', 10)
   route.use(isAuth)
-  app.use('/album', route)
+  app.use('/beat', route)
 
   // MARK: Album routes 
 
-  route.post('/upload', albumUpload, async (req: Request, res: Response) => {
+  route.post('/upload', beatUpload, async (req: Request, res: Response) => {
     /* 
     req.body.album : {title: '', tracks: [{
       "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": 
@@ -76,7 +76,7 @@ export default (app: Router) => {
     */ 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }
     if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const albumService = Container.get(AlbumService)
+    const beatService = Container.get(BeatService)
     const authServiceInstance = Container.get(AuthService)
     const albumObject = JSON.parse(req.body.album)
     if(files['tracks'].length != albumObject.tracks.length) 
@@ -84,29 +84,29 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.uploadAlbum(userId, albumObject, files['tracks'], files['cover'][0])
+      const successMessage = await beatService.uploadBeat(userId, albumObject, files['tracks'], files['cover'][0])
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
   })
 
-  route.post('/add_new_tracks/:id', tracksToExistingAlbumUpload, async (req: Request, res: Response) => {
+  route.post('/add_new_tracks/:id', tracksToExistingBeatUpload, async (req: Request, res: Response) => {
     /* 
-    req.body.tracks = {tracks: [{
+    req.body.tracks = {"tracks": [{
     "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": false
-    , "hasImage": false}]} 
+    , "hasImage": false, "type": ""}]} 
     req.files = {tracks: [], images: []}
     */
     const files = req.files as Express.Multer.File[]
     if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const albumService = Container.get(AlbumService)
+    const beatService = Container.get(BeatService)
     const authServiceInstance = Container.get(AuthService)
     const trackObjects = JSON.parse(req.body.tracks)
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, files)
+      const successMessage = await beatService.addTracksToExistingBeat(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, files)
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
@@ -130,8 +130,4 @@ export default (app: Router) => {
     */
   })
 
-  route.post('/album/:albumId/:songId', (req: Request, res: Response) => {
-    /*  Add an existing song to album 
-    */
-  })
 }

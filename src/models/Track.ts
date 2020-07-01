@@ -32,6 +32,9 @@ const trackSchema = new Schema({
   album: {
     type: mongoose.Schema.Types.ObjectId
   },
+  beat: {
+    type: mongoose.Schema.Types.ObjectId
+  },
   title: {
     type: String,
     required: true,
@@ -49,9 +52,9 @@ const trackSchema = new Schema({
     type: String,
     required: true
   }],
-  type: { // It could be a loop, a drumkit or a normal song 
+  type: { // It could be a loop, a drumkit, single or album 
     type: String,
-    default: 'normal'
+    default: 'single'
   },
   numberoflistens: {
     type: Number,

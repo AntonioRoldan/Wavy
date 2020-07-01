@@ -17,7 +17,7 @@ const albumSchema = new Schema({
   author: { // We create an array to allow collaborations
     name: mongoose.Schema.Types.ObjectId
   },
-  undercoverUrl: { // Reference to album's image file stored in a gridFS collection
+  coverUrl: { // Reference to album's image file stored in a gridFS collection
     type: String
   },
   genres: [{

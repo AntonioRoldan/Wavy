@@ -29,5 +29,7 @@ export interface ITrack extends Document {
 
   album: mongoose.Schema.Types.ObjectId
 
+  beat: mongoose.Schema.Types.ObjectId
+
   title: string
 }
