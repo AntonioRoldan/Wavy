@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "author": "Antonio",
-  "license": "MIT",
+  "license": "",
   "scripts": {
     "start": "npm run serve",
     "build": "npm run build-ts && npm run lint",
