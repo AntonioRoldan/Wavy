@@ -54,15 +54,26 @@ export interface IUser extends Document {
     duepaymentsum: Number
   }>
 
-  albums: Array<{undercover: mongoose.Schema.Types.ObjectId,
+  albums: Array<{coverUrl: string,
     id: mongoose.Schema.Types.ObjectId,
     title: string,
-    collaborators: [{
+    collaborators: {
       id: mongoose.Schema.Types.ObjectId,
       name: string
-    }]}>
+    }[]}>
   
-  tracks: mongoose.Schema.Types.ObjectId[]
+  tracks: Array<{imageUrl: string, 
+    audioUrl: string, 
+    id: mongoose.Schema.Types.ObjectId,
+    title: string
+  }>
+
+  purchases: {
+    beats: mongoose.Schema.Types.ObjectId[],
+    tutorials: mongoose.Schema.Types.ObjectId[]
+  }
+
+  shoppingCart: mongoose.Schema.Types.ObjectId[] // Security check, check that the id that is inserted here is a beat id that does not belong to the user 
 
   inspiredGenres: string[]
 

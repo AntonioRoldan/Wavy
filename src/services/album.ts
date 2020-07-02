@@ -136,7 +136,7 @@ export default class AlbumService {
   //       //TODO: Test this 
   // }
 
-  public getAlbumTracks(userId: ObjectId, albumId: ObjectId): Promise<any> {
+  public getAlbumTracks(albumId: ObjectId): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{

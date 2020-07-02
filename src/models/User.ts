@@ -28,6 +28,14 @@ const userSchema = new Schema({
     minlength: 6,
     trim: true,
   },
+  purchases: {
+    beats: [{
+      type: mongoose.Schema.Types.ObjectId
+    }],
+    tutorials: [{
+      type: mongoose.Schema.Types.ObjectId
+    }]
+  },
   description: {
     type: String
   },
@@ -82,7 +90,7 @@ const userSchema = new Schema({
     },
   ],
   albums: [{
-    undercover: mongoose.Schema.Types.ObjectId,
+    coverUrl: String,
     id: mongoose.Schema.Types.ObjectId,
     title: String,
     collaborators: [{
@@ -91,14 +99,36 @@ const userSchema = new Schema({
     }]
   }],
   tracks: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Track'
+    imageUrl: String, 
+    audioUrl: String,
+    id: mongoose.Schema.Types.ObjectId,
+    title: String
   }],
   playlists: [
     {
       id: mongoose.Schema.Types.ObjectId,
       name: String,
     },
+  ],
+  beats: [
+    {
+      id: mongoose.Schema.Types.ObjectId,
+      name: String, 
+      price: Number, 
+      discount: Number,
+      tracks: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Track'
+        }
+      ]
+    }
+  ],
+  shoppingCart: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Beat'
+    }
   ],
   createdAt: {
     type: Date,
