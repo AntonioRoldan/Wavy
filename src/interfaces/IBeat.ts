@@ -13,6 +13,8 @@ export interface IBeat extends Document {
 
   inspiredArtists: string[]
 
+  setDiscount: Boolean
+  subscriptionDiscount: Number
   discount: Number
 
   genres: string[]

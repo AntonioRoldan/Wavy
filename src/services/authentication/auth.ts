@@ -10,6 +10,7 @@ import { Service, Inject } from 'typedi'
 import crypto from 'crypto'
 import config from '../../config'
 import MailService from '../mailer'
+import argon2 from 'argon2'
 import { IUser } from '../../interfaces/IUser'
 import ValidationService from './validation'
 import { IToken } from '../../interfaces/IToken'
@@ -206,7 +207,7 @@ export default class AuthService {
   private checkIfUserExistsAndMatchPasswords(userObj: { email: string, password: string}): Promise<any> {
     return new Promise((resolve, reject) => {
       let filter: { email: string } = { email: userObj.email }
-      this.userModel.findOne(filter, (err, user) => {
+      this.userModel.findOne(filter, async (err, user) => {
         if (err) return reject({ code: 404, msg: 'Email does not exist' })
         if (!user)
           return reject({
@@ -214,7 +215,7 @@ export default class AuthService {
             msg: 'Invalid email',
           })
         const encodedPassword: string = user.password
-        const passwordIsMatch: boolean = bcrypt.compareSync(userObj.password, encodedPassword)
+        const passwordIsMatch: boolean = await argon2.verify(userObj.password, encodedPassword);
         if (passwordIsMatch) {
           this.createTokens(user)
             .then(async tokens => {

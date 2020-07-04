@@ -4,4 +4,4 @@
 */
 
 
-// This route will manage direct messages and follows, it will also manage the chat for the livestreams
+// This route will manage direct messages and follows, it will also manage the chat for the livestreams 

@@ -27,7 +27,7 @@ export default class AlbumService {
     */
        //TODO: Test this 
    return new Promise( async (resolve, reject) => {
-     try {
+     try { //DISPATCHED AND RABBITMQ 
       const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumId.toString())
       const album = await this.albumModel.findById(albumId)
       const user = await this.userModel.findById(userId)
@@ -62,7 +62,7 @@ export default class AlbumService {
       const albumTitle = albumObject.title
       const tracksObjects: any = albumObject.tracks
       try {
-        if(!coverFile) reject({code: 400, msg: 'Cover image not provided'})
+        if(!coverFile) reject({code: 400, msg: 'Cover image not provided'}) // DISPATCHED AND RABBITMQ 
         const coverUrl = await this.s3Service.uploadAlbumCover(userId.toString(), coverFile)
         var albumModel: any = await this.albumModel.create({
           title: albumTitle,
@@ -164,6 +164,7 @@ export default class AlbumService {
         const album = await this.albumModel.findById(albumId)
         const deletedFile = await this.s3Service.deleteFile(album.coverUrl)
         console.log('deletedFile :', deletedFile)
+        // DISPATCHED AND RABBITMQ 
         const coverUrl = await this.s3Service.uploadAlbumCover(userId, coverFile)
         album.coverUrl = coverUrl
         const modifiedAlbum = await album.save()

@@ -28,6 +28,7 @@ export default class BeatService {
        //TODO: Test this 
    return new Promise( async (resolve, reject) => {
      try {
+      // DISPATCHED AND RABBITMQ 
       const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, undefined, beatId.toString())
       const beat = await this.beatModel.findById(beatId)
       const user = await this.userModel.findById(userId)
@@ -66,7 +67,7 @@ export default class BeatService {
       const beatTitle = beatObject.title
       const tracksObjects: any = beatObject.tracks // Same as track object for an album but we add a type property to specify whether it is a loop or a drumkit 
       try {
-        if(!coverFile) reject({code: 400, msg: 'Cover image not provided'})
+        if(!coverFile) reject({code: 400, msg: 'Cover image not provided'})  // DISPATCHED AND RABBITMQ 
         const coverUrl = await this.s3Service.uploadBeatCover(userId.toString(), coverFile)
         var beatModel: any = await this.beatModel.create({
           title: beatTitle,
@@ -140,23 +141,40 @@ export default class BeatService {
     })
   }
 
-  // public getSavedAlbums(): Promise<any> {
-  //       //TODO: Test this 
-  // }
-
-  public getBeatTracks(userId: ObjectId, beatId: ObjectId): Promise<any> {
+  public displayBeatForSale(userId: ObjectId, beatId: ObjectId): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let beatData: any = {}
+        let userIsSubscribedToAuthor: Boolean = false 
+        const user = await this.userModel.findById(userId)
+        const beatDocument = await this.beatModel.findById(beatId)
+        const author = await this.userModel.findById(beatDocument.authorId)
+        const beatTracks = await this.trackModel.find({beat: beatDocument._id})
+        userIsSubscribedToAuthor = user.subscriptions.includes(author._id) ? true : false // TODO: Test this 
+        beatData.title = beatDocument.title
+        beatData.author = beatDocument.authorName
+        beatData.price = userIsSubscribedToAuthor ? Number(beatDocument.subscriptionDiscount) * Number(beatDocument.price) : beatDocument.setDiscount ? Number(beatDocument.price) * Number(beatDocument.discount) : Number(beatDocument.price)
+        beatData.tracksNumber = beatTracks.length
+        beatData.discount = beatDocument.discount
+        resolve(beatData)
+      } catch(err) {
+        reject({code: 500, msg: err.message | err.msg})
+      }
+    })
+  }
+  public getBeatTracks(beatId: ObjectId): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
-        let albumData: any = {} // {album: {title: , author:, undercover: }, tracks: [{title: , audio: }]}
+        let beatData: any = {} // {album: {title: , author:, undercover: }, tracks: [{title: , audio: }]}
         const beatDocument = await this.beatModel.findById(beatId)
         const author = await this.userModel.findById(beatDocument.authorId)
-        const albumTracks = await this.trackModel.find({album: beatDocument._id})
-        albumData.tracks = albumTracks.map(track => {
+        const beatTracks = await this.trackModel.find({beat: beatDocument._id})
+        beatData.tracks = beatTracks.map(track => {
           return {title: track.title, audio: track.trackUrl}
         })
-        albumData.album = {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl}
-        resolve(albumData)
+        beatData.beat = {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl}
+        resolve(beatData)
       } catch(err) {
         reject({code: 500, msg: err.message | err.msg})
       }
@@ -169,6 +187,7 @@ export default class BeatService {
     //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
+         // DISPATCHED AND RABBITMQ 
         const beat = await this.beatModel.findById(beatId)
         const deletedFile = await this.s3Service.deleteFile(beat.coverUrl)
         console.log('deletedFile :', deletedFile)

@@ -6,8 +6,9 @@
 
 import { Service, Inject } from 'typedi'
 import _ from 'lodash'
-import bcrypt from 'bcrypt'
-const salt = 10
+import { randomBytes } from 'crypto'
+import argon2 from 'argon2'
+const salt = randomBytes(32)
 @Service()
 export default class ValidationService {
   constructor(
@@ -15,7 +16,7 @@ export default class ValidationService {
 
   ){}
   public validate = (user: object) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const validations = {
         username: {
           errorMessage: 'Name is required',
@@ -63,7 +64,8 @@ export default class ValidationService {
         return reject({ code: 400, msg: err })
       }
       const plainTextPassword = _.get(user, 'password') 
-      _.set(user, 'password', bcrypt.hashSync(plainTextPassword, salt))
+      const hashedPassword = await argon2.hash(plainTextPassword, {salt})
+      _.set(user, 'password', hashedPassword)
       resolve(user)
     })
   }

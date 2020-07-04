@@ -126,8 +126,8 @@ const userSchema = new Schema({
   ],
   shoppingCart: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Beat'
+      id: mongoose.Schema.Types.ObjectId,
+      type: String // Could be a beat or a tutorial 
     }
   ],
   createdAt: {

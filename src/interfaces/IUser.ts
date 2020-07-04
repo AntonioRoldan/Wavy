@@ -73,7 +73,7 @@ export interface IUser extends Document {
     tutorials: mongoose.Schema.Types.ObjectId[]
   }
 
-  shoppingCart: mongoose.Schema.Types.ObjectId[] // Security check, check that the id that is inserted here is a beat id that does not belong to the user 
+  shoppingCart: {id: mongoose.Schema.Types.ObjectId, type: string}[] // Security check, check that the id that is inserted here is a beat id that does not belong to the user 
 
   inspiredGenres: string[]
 

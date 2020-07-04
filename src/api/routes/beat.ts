@@ -122,11 +122,11 @@ export default (app: Router) => {
   })
 
   route.delete('/album/:id', (req: Request, res: Response) => {
-
+    // Delete album 
   })
 
   route.delete('/album/:trackId', (req: Request, res: Response) => {
-    /* Delete a song from an album 
+    /* Delete a song from an album NOTE: We are going to transfer this route to the track routes 
     */
   })
 
