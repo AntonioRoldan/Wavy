@@ -38,6 +38,20 @@ export default class PlaylistService {
     })
   }
 
+  public editPlaylistName(name: string, playlistId: string): Promise<any>{
+    return new Promise((resolve, reject) => {
+      
+    })
+  }
+
+  public searchPlaylist(search: string): Promise<any>{
+    return new Promise((resolve, reject) => {
+      
+    })
+  }
+
+  // DELETE METHODS 
+
   public deleteSongFromPlaylist(userId: string, songId: string, playlistId: string): Promise<any>{
     return new Promise((resolve, reject) => {
       
