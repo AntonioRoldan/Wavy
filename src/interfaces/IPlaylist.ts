@@ -9,10 +9,10 @@ export interface IPlaylist extends Document {
 
   name: string
 
-  author: mongoose.Schema.Types.ObjectId
+  author: { id: mongoose.Schema.Types.ObjectId, name: string }
 
   tracks: mongoose.Schema.Types.ObjectId[]
 
-  images: mongoose.Schema.Types.ObjectId[]
+  images: string[]
 
 }

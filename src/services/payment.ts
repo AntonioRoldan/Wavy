@@ -31,7 +31,7 @@ export default class PaymentService {
             reject({code: 400, msg: 'Item does not exist'})
           }
           user.shoppingCart.push({id: beat._id, type: 'beat'})
-          user.save()
+          await user.save()
           resolve('Item successfully added to shopping list')
         } catch (err) {
 
@@ -57,7 +57,7 @@ export default class PaymentService {
           })
           resolve(shoppingCartData)
         } catch (err) {
-          reject({code: 500, msg: err.message | err.msg})
+          reject({code: 500, msg: err.message || err.msg})
         }
       })
     }
@@ -78,11 +78,11 @@ export default class PaymentService {
         try {
           const user = await this.userModel.findById(userId)
           user.shoppingCart.filter(item => String(item.id) !== itemId)
-          user.save()
+          await user.save()
           const shoppingCartData = await this.showShoppingCart(userId)
           resolve(shoppingCartData)
         } catch (err) {
-          reject({code: err.code | 500, msg: err.message | err.msg})
+          reject({code: err.code || 500, msg: err.message || err.msg})
         }
       })
     }
@@ -92,10 +92,10 @@ export default class PaymentService {
         try {
          const user = await this.userModel.findById(userId)
          user.shoppingCart = []
-         user.save()
+         await user.save()
          resolve([])
         } catch (err) {
-          reject({code: err.code | 500, msg: err.message | err.msg})
+          reject({code: err.code | 500, msg: err.message || err.msg})
         }
       })
     }

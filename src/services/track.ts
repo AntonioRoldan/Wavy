@@ -81,7 +81,7 @@ export default class TrackService {
         }) 
         resolve(userTracks)
       } catch(err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -96,7 +96,7 @@ export default class TrackService {
         })
         resolve(matchingTracks)
       } catch(err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -106,13 +106,14 @@ export default class TrackService {
   public editTrackName(trackId: ObjectId, trackName: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
+        if(!trackName) reject({code: 400, msg: 'Track name cannot be empty'})
         const track = await this.trackModel.findById(trackId)
         track.title = trackName
         const modifiedTrack = await track.save()
         console.log('modifiedTrack :', modifiedTrack)
         resolve(trackName)
       } catch (err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }

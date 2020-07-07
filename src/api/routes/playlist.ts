@@ -3,7 +3,6 @@
   All rights reserved 
 */
 
-
 import { Container } from 'typedi'
 import { Request, Response, Router } from 'express'
 import AuthService from '../../services/authentication/auth'

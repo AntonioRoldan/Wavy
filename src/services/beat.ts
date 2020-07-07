@@ -158,7 +158,7 @@ export default class BeatService {
         beatData.discount = beatDocument.discount
         resolve(beatData)
       } catch(err) {
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -197,7 +197,7 @@ export default class BeatService {
         console.log('modifiedBeat :', modifiedBeat)
         resolve(modifiedBeat)
       } catch(err){ 
-        reject({code: err.code, msg: err.message | err.msg})
+        reject({code: err.code, msg: err.message || err.msg})
       }
     })
   }
@@ -211,7 +211,7 @@ export default class BeatService {
         console.log('modifiedBeat :', modifiedTrack)
         resolve(beatName)
       } catch (err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -221,17 +221,17 @@ export default class BeatService {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try {
-        const tracksToBeDeleted = await this.trackModel.find({beat: mongoose.Types.ObjectId(beatId)})
+        const tracksToBeDeleted = await this.trackModel.find({beat: new mongoose.Types.ObjectId(beatId)})
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Beat does not exist'})
         tracksToBeDeleted.forEach(async track => {
           this.trackService.deleteTrack(track._id) 
           const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })
-        const beat = await this.beatModel.findById(mongoose.Types.ObjectId(beatId))
+        const beat = await this.beatModel.findById(beatId)
         const deletedCover = await this.s3Service.deleteFile(beat.coverUrl)
         console.log('deletedCover :', deletedCover)
-        const deletedBeat = await this.beatModel.deleteOne({_id: mongoose.Types.ObjectId(beatId)})
+        const deletedBeat = await this.beatModel.deleteOne({_id: new mongoose.Types.ObjectId(beatId)})
         console.log('deletedBeat :', deletedBeat)
         resolve('Beat was deleted')
       } catch(err){

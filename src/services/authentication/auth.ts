@@ -151,9 +151,9 @@ export default class AuthService {
       this.tokenModel.create({
         userId: userData._id,
         token: createNewToken ? newToken : token})
-      .then((tokenData: any) => {
+      .then(async (tokenData: any) => {
         userData.token = tokenData.token
-        userData.save()
+        await userData.save()
         return this.mailService.confirmationEmail(userData, tokenData.token, host, newTokenCreated)})
       .then((data: any) => resolve(data))
       .catch(err => {

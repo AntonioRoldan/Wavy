@@ -171,7 +171,7 @@ export default class AlbumService {
         console.log('modifiedAlbum :', modifiedAlbum)
         resolve(modifiedAlbum)
       } catch(err){ 
-        reject({code: err.code, msg: err.message | err.msg})
+        reject({code: err.code, msg: err.message || err.msg})
       }
     })
   }
@@ -180,12 +180,13 @@ export default class AlbumService {
     return new Promise(async (resolve, reject) => {
       try {
         const album = await this.albumModel.findById(albumId)
+        if(!albumName) reject({code: 400, msg: 'Album name cannot be empty'})
         album.title = albumName
         const modifiedAlbum = await album.save()
         console.log('modifiedAlbum :', modifiedAlbum)
         resolve(albumName)
       } catch (err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -195,17 +196,17 @@ export default class AlbumService {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try {
-        const tracksToBeDeleted = await this.trackModel.find({album: mongoose.Types.ObjectId(albumId)})
+        const tracksToBeDeleted = await this.trackModel.find({album: new mongoose.Types.ObjectId(albumId)})
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Album does not exist'})
         tracksToBeDeleted.forEach(async track => {
           this.trackService.deleteTrack(track._id) 
           const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })
-        const album = await this.albumModel.findById(mongoose.Types.ObjectId(albumId))
+        const album = await this.albumModel.findById(albumId)
         const deletedCover = await this.s3Service.deleteFile(album.coverUrl)
         console.log('deletedCover :', deletedCover)
-        const deletedAlbum = await this.albumModel.deleteOne({_id: mongoose.Types.ObjectId(albumId)})
+        const deletedAlbum = await this.albumModel.deleteOne({_id: new mongoose.Types.ObjectId(albumId)})
         console.log('deletedAlbum :', deletedAlbum)
         resolve('Album was deleted')
       } catch(err){
