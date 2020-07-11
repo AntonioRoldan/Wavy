@@ -202,16 +202,37 @@ export default class PlaylistService {
   }
   // DELETE METHODS
 
-  public deleteSongFromPlaylist(userId: string, songId: string, playlistId: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+  public removeSongFromPlaylist(userId: string, songId: string, playlistId: string): Promise<any> {
+    return new Promise( async (resolve, reject) => {
       try {
-        
-      } catch (err) {}
+        const song = await this.trackModel.findById(songId)
+        let playlist = await this.playlistModel.findById(playlistId)
+        if(String(playlist.author.id) !== userId) reject({code: 400, msg: `You don't have permission to modify this playlist`})
+        console.log('Playlist tracks before removing:', playlist.tracks)
+        playlist.tracks = playlist.tracks.filter(trackId => {
+          return String(trackId) !== songId
+        })
+        playlist = await playlist.save()
+        console.log('Playlist tracks after removing:', playlist.tracks)
+        resolve(`${song.title} removed from playlist`)
+      } catch (err) {
+        reject({code: 400, msg: err.message || err.msg})
+      }
     })
   }
 
-  public deletePlaylist(userId: string, playlistId: string) {
-    try {
-    } catch (err) {}
+  public deletePlaylist(userId: string, playlistId: string): Promise<any> {
+    return new Promise( async (resolve, reject) => {
+      try {
+        const playlistTobeDeletedd = await this.playlistModel.findById(playlistId)
+        if(String(playlistTobeDeletedd.author.id) !== userId) reject({code: 400, msg: `You don't have permission to modify this playlist`})
+        
+        const deletedPlaylist = await this.playlistModel.deleteOne({_id: new mongoose.Types.ObjectId(playlistId)})
+        console.log('Deleted playlist :', deletedPlaylist)
+        resolve(`${playlistTobeDeletedd.name} playlist was deleted`)
+      } catch (err) {
+        reject({code: 500, msg: err.message || err.msg})
+      }
+    })
   }
 }

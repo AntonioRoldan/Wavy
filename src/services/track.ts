@@ -6,6 +6,7 @@
 import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import { ObjectId } from 'bson'
+import mongoose from 'mongoose'
 
 @Service()
 export default class TrackService {
@@ -155,7 +156,7 @@ export default class TrackService {
         console.log('deletedTrackImage :', deletedTrackImage)
         const deletedTrackAudio = await this.s3Service.deleteFile(track.trackUrl)
         console.log('deletedTrackAudio :', deletedTrackAudio)
-        const deletedTrack =  await this.trackModel.deleteOne(trackId)
+        const deletedTrack =  await this.trackModel.deleteOne({_id: new mongoose.Types.ObjectId(trackId)})
         console.log('deletedTrack :', deletedTrack)
         resolve('Track was deleted')
       } catch(err) {

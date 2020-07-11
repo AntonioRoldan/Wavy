@@ -92,11 +92,20 @@ export default (app: Router) => {
   })
 
   route.put('/edit_name/:name', (req: Request, res: Response) => {
+    try {
 
+    } catch(err){
+
+    }
   })
 
 
   route.delete('/delete/:id', (req: Request, res: Response) => {
     // Delete a single track 
+    try {
+
+    } catch(err){
+      
+    }
   })
 }

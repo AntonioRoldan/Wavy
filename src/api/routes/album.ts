@@ -62,8 +62,9 @@ export default (app: Router) => {
   var upload = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: tracksFileFilter})
   var albumUpload: any = upload.fields([{name: 'tracks', maxCount: 10}, {name: 'cover', maxCount: 1}])
   var tracksToExistingAlbumUpload: any = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: addTracksToExistingAlbumFilter}).array('tracks', 10)
+  var editCoverUpload: any = multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('cover')
   route.use(isAuth)
-  app.use('/album', route)
+  app.use('/albums', route)
 
   // MARK: Album routes 
 
@@ -98,6 +99,8 @@ export default (app: Router) => {
     , "hasImage": false}]} 
     req.files = {tracks: [], images: []}
     */
+    // TODO: USER SECURITY CHECK
+
     const files = req.files as Express.Multer.File[]
     if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
     const albumService = Container.get(AlbumService)
@@ -106,32 +109,95 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.addTracksToExistingAlbum(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, files)
+      const successMessage = await albumService.addTracksToExistingAlbum(userId, new mongoose.Types.ObjectId(req.params.id), trackObjects, files)
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
   })
 
-  route.put('/edit_name/:name', (req: Request, res: Response) => {
-
+  route.get('/show/:id', async (req: Request, res: Response) => {
+    const albumId = req.params.id 
+    const albumServiceInstance = Container.get(AlbumService)
+    try {
+      const albumData = await albumServiceInstance.getAlbumTracks(new mongoose.Types.ObjectId(albumId))
+      responseHandle(res, albumData)
+    } catch(err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.put('/edit_cover/:id', (req: Request, res: Response) => {
+  route.put('/edit_name/:id/:name', async (req: Request, res: Response) => {
+    // TODO: USER SECURITY CHECK
+    const albumId = req.params.id 
+    const albumName = req.params.name
+    const albumServiceInstance = Container.get(AlbumService)
+    const authServiceInstance = Container.get(AuthService)
+    try {
+      const responseData = await albumServiceInstance.editAlbumName(albumId, albumName)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
+  route.put('/edit_cover/:id', editCoverUpload, async (req: Request, res: Response) => {
+    // TODO: USER SECURITY CHECK
+    const albumId = req.params.id 
+    const albumServiceInstance = Container.get(AlbumService)
+    const authServiceInstance = Container.get(AuthService)
+     try {
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await albumServiceInstance.editAlbumCover(userId, new mongoose.Types.ObjectId(albumId), req.file)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
+  route.delete('/delete/:id', async (req: Request, res: Response) => {
+    /*
+    Delete album  
+    TODO: USER SECURITY CHECK
+    */
+   const albumId = req.params.id 
+   const albumServiceInstance = Container.get(AlbumService)
+   const authServiceInstance = Container.get(AuthService)
+   try{
+    const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+    const userId = await authServiceInstance.getUserId(token)
+    const responseData = await albumServiceInstance.deleteAlbum(albumId)
+    responseHandle(res, responseData)
+   } catch(err){
+    errorHandle(res, err.msg, err.code)
+   }
     
   })
 
-  route.delete('/album/:id', (req: Request, res: Response) => {
-
-  })
-
-  route.delete('/album/:trackId', (req: Request, res: Response) => {
+  route.delete('/delete_track/:id', async (req: Request, res: Response) => {
     /* Delete a song from an album 
+    TODO: USER SECURITY CHECK
     */
+    const trackId = req.params.id
+    const albumServiceInstance = Container.get(AlbumService)
+    const trackServiceInstance = Container.get(TrackService)
+    try {
+      const responseData = await trackServiceInstance.deleteTrack(trackId)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.post('/album/:albumId/:songId', (req: Request, res: Response) => {
+  route.post('/add_existing_song/:albumId/:songId', (req: Request, res: Response) => {
     /*  Add an existing song to album 
-    */
+        TODO: Write this 
+    */ 
+    try {
+
+    } catch(err) {
+      
+    }
   })
 }

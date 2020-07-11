@@ -63,7 +63,7 @@ export default (app: Router) => {
   var beatUpload: any = upload.fields([{name: 'tracks', maxCount: 10}, {name: 'cover', maxCount: 1}])
   var tracksToExistingBeatUpload: any = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: addTracksToExistingAlbumFilter}).array('tracks', 10)
   route.use(isAuth)
-  app.use('/beat', route)
+  app.use('/beats', route)
 
   // MARK: Album routes 
 
@@ -74,6 +74,8 @@ export default (app: Router) => {
     }]}
     req.files : {cover: [], tracks: []}
     */ 
+    // TODO: USER SECURITY CHECK
+
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }
     if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
     const beatService = Container.get(BeatService)
@@ -98,6 +100,8 @@ export default (app: Router) => {
     , "hasImage": false, "type": ""}]} 
     req.files = {tracks: [], images: []}
     */
+    // TODO: USER SECURITY CHECK
+
     const files = req.files as Express.Multer.File[]
     if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
     const beatService = Container.get(BeatService)
@@ -113,21 +117,68 @@ export default (app: Router) => {
     }
   })
 
-  route.put('/edit_name/:name', (req: Request, res: Response) => {
-
+  route.get('/show/:id', async (req: Request, res: Response) => {
+    const beatId = req.params.id 
+    const beatServiceInstance = Container.get(BeatService)
+    try {
+      const beatData = await beatServiceInstance.getBeatTracks(new mongoose.Types.ObjectId(beatId))
+      responseHandle(res, beatData)
+    } catch(err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.put('/edit_cover/:id', (req: Request, res: Response) => {
-    
+  route.put('/edit_name/:id/:name', async (req: Request, res: Response) => {
+    // TODO: USER SECURITY CHECK
+    const beatId = req.params.id 
+    const beatName = req.params.name
+    const beatServiceInstance = Container.get(BeatService)
+    const authServiceInstance = Container.get(AuthService)
+    try {
+      const responseData = await beatServiceInstance.editBeatName(beatId, beatName)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.delete('/album/:id', (req: Request, res: Response) => {
+  route.put('/edit_cover/:id', async (req: Request, res: Response) => {
+    // TODO: USER SECURITY CHECK
+    const beatId = req.params.id 
+    const beatServiceInstance = Container.get(BeatService)
+    const authServiceInstance = Container.get(AuthService)
+     try {
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await beatServiceInstance.editBeatCover(userId, new mongoose.Types.ObjectId(beatId), req.file)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
+  route.delete('/delete/:id', async (req: Request, res: Response) => {
+    // TODO: USER SECURITY CHECK
     // Delete album 
+    const beatId = req.params.id
+    const beatServiceInstance = Container.get(BeatService)
+     try {
+      const responseData = await beatServiceInstance.deleteBeat(beatId)
+      responseHandle(res, responseData)
+    } catch(err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.delete('/album/:trackId', (req: Request, res: Response) => {
-    /* Delete a song from an album NOTE: We are going to transfer this route to the track routes 
+  route.delete('/delete_track/:trackId', (req: Request, res: Response) => {
+    /* TODO: write this with user security check 
+
     */
+    try {
+      
+    } catch(err) {
+      
+    }
   })
 
 }
