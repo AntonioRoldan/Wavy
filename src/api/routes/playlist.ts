@@ -38,7 +38,28 @@ export default (app: Router) => {
     }
   })
 
-  route.post('/add_album', (req:Request, res:Response) => {
+  route.post('/add_album/:playlist_id/:album_id', async (req:Request, res:Response) => {
+    const playlistId = req.params.playlist_id
+    const albumId = req.params.album_id
+    const playlistServiceInstance = Container.get(PlaylistService)
+    const authServiceInstance = Container.get(AuthService)
+    const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+    const userId = await authServiceInstance.getUserId(token)
+    try {
+      const responseData = await playlistServiceInstance.addAlbumToPlaylist(userId, playlistId, albumId)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
+  route.post('/add_song/:playlist_id/:song_id', async (req: Request, res: Response) => {
+    const playlistId = req.params.playlist_id
+    const songId = req.params.song_id
+    const playlistServiceInstance = Container.get(PlaylistService)
+    const authServiceInstance = Container.get(AuthService)
+    const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+    const userId = await authServiceInstance.getUserId(token)
     try {
 
     } catch(err) {
@@ -46,16 +67,14 @@ export default (app: Router) => {
     }
   })
 
-  route.post('/add_song', (req: Request, res: Response) => {
+  route.get('/show/:playlist_id', async (req: Request, res: Response) => {
+    const playlistId = req.params.playlist_id
+    const playlistServiceInstance = Container.get(PlaylistService)
     try {
 
     } catch(err) {
       
     }
-  })
-
-  route.get('/show', async (req: Request, res: Response) => {
-
   })
 
   route.put('/edit_name', (req: Request, res:Response) => {
