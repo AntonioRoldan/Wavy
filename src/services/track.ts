@@ -104,11 +104,15 @@ export default class TrackService {
 
   // MARK: Update 
 
-  public editTrackName(trackId: ObjectId, trackName: string): Promise<any> {
+  public editTrackName(userId: string, trackId: string, trackName: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
         if(!trackName) reject({code: 400, msg: 'Track name cannot be empty'})
         const track = await this.trackModel.findById(trackId)
+        if (!track)
+          reject({ code: 400, msg: 'The playlist you are trying to modify does not exist' })
+        if (userId !== String(track.authorId))
+          reject({ code: 400, msg: 'You do not have access to this playlist' })
         track.title = trackName
         const modifiedTrack = await track.save()
         console.log('modifiedTrack :', modifiedTrack)
@@ -124,6 +128,10 @@ export default class TrackService {
       try {
         const track = await this.trackModel.findById(trackId)
         if(!track.isSingleTrack) reject({code: 400, msg: 'Change album undercover to change this track image'})
+        if (!track)
+          reject({ code: 400, msg: 'The track you are trying to modify does not exist' })
+        if (userId !== String(track.authorId))
+          reject({ code: 400, msg: 'You do not have access to this playlist' })
         if(track.imageUrl) { 
           const track = await this.trackModel.findById(trackId)
           if(!track) reject({code: 400, msg: 'This track does not exist'})

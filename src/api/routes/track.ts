@@ -91,21 +91,30 @@ export default (app: Router) => {
     }
   })
 
-  route.put('/edit_name/:name', (req: Request, res: Response) => {
+  route.put('/edit_name/:track_id/:name', async (req: Request, res: Response) => {
+    const trackService = Container.get(TrackService)
+    const authServiceInstance = Container.get(AuthService)
     try {
-
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await trackService.editTrackName(userId, req.params.track_id, req.params.name)
+      responseHandle(res, responseData)
     } catch(err){
-
+      errorHandle(res, err.msg, err.code)
     }
   })
 
-
-  route.delete('/delete/:id', (req: Request, res: Response) => {
+  route.delete('/delete/:id', async (req: Request, res: Response) => {
     // Delete a single track 
+    const trackService = Container.get(TrackService)
+    const authServiceInstance = Container.get(AuthService)
     try {
-
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await trackService.deleteTrack(req.params.id)
+      responseHandle(res, responseData)
     } catch(err){
-      
+      errorHandle(res, err.msg, err.code)
     }
   })
 }
