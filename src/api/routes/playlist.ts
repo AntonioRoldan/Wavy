@@ -67,13 +67,25 @@ export default (app: Router) => {
     }
   })
 
+  route.get('/search', async (req: Request, res: Response) => {
+    const searchTerm = req.query.term as string || ''
+    const playlistServiceInstance = Container.get(PlaylistService)
+    try {
+      const responseData = await playlistServiceInstance.searchPlaylist(searchTerm)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
   route.get('/show/:playlist_id', async (req: Request, res: Response) => {
     const playlistId = req.params.playlist_id
     const playlistServiceInstance = Container.get(PlaylistService)
     try {
-
+      const responseData = await playlistServiceInstance.showPlaylistTracks(playlistId)
+      responseHandle(res, responseData)
     } catch(err) {
-      
+      errorHandle(res, err.msg, err.code)
     }
   })
 
