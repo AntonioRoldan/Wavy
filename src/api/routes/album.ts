@@ -109,7 +109,7 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.addTracksToExistingAlbum(userId, new mongoose.Types.ObjectId(req.params.id), trackObjects, files)
+      const successMessage = await albumService.addTracksToExistingAlbum(userId.toString(), new mongoose.Types.ObjectId(req.params.id), trackObjects, files)
       responseHandle(res, successMessage)
     } catch(err){
       errorHandle(res, err.msg, err.code)
@@ -122,7 +122,7 @@ export default (app: Router) => {
     try {
       const albumData = await albumServiceInstance.getAlbumTracks(new mongoose.Types.ObjectId(albumId))
       responseHandle(res, albumData)
-    } catch(err){
+    } catch(err) {
       errorHandle(res, err.msg, err.code)
     }
   })
@@ -134,7 +134,9 @@ export default (app: Router) => {
     const albumServiceInstance = Container.get(AlbumService)
     const authServiceInstance = Container.get(AuthService)
     try {
-      const responseData = await albumServiceInstance.editAlbumName(albumId, albumName)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await albumServiceInstance.editAlbumName(userId, albumId, albumName)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -167,7 +169,7 @@ export default (app: Router) => {
    try{
     const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
     const userId = await authServiceInstance.getUserId(token)
-    const responseData = await albumServiceInstance.deleteAlbum(albumId)
+    const responseData = await albumServiceInstance.deleteAlbum(userId, albumId)
     responseHandle(res, responseData)
    } catch(err){
     errorHandle(res, err.msg, err.code)
@@ -180,10 +182,12 @@ export default (app: Router) => {
     TODO: USER SECURITY CHECK
     */
     const trackId = req.params.id
-    const albumServiceInstance = Container.get(AlbumService)
     const trackServiceInstance = Container.get(TrackService)
+    const authServiceInstance = Container.get(AuthService)
     try {
-      const responseData = await trackServiceInstance.deleteTrack(trackId)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await trackServiceInstance.deleteTrack(userId, trackId)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)

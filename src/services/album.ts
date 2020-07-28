@@ -28,9 +28,12 @@ export default class AlbumService {
        //TODO: Test this 
    return new Promise( async (resolve, reject) => {
      try { //DISPATCHED AND RABBITMQ 
-      const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumId.toString())
       const album = await this.albumModel.findById(albumId)
       const user = await this.userModel.findById(userId)
+      if(String(album.author) !== String(user._id)) {
+        reject({code: 400, msg: 'You have no permission to modify this album'})
+      }
+      const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumId.toString())
       trackObjects.forEach(async (trackObject, index) => {
         const createdTrack = await this.trackModel.create({
           authorId: userId,
@@ -162,6 +165,9 @@ export default class AlbumService {
     return new Promise(async (resolve, reject) => {
       try{
         const album = await this.albumModel.findById(albumId)
+        if(String(album.author) !== String(userId)) {
+          reject({code: 400, msg: 'You have no permission to modify this album'})
+        }
         const deletedFile = await this.s3Service.deleteFile(album.coverUrl)
         console.log('deletedFile :', deletedFile)
         // DISPATCHED AND RABBITMQ 
@@ -175,11 +181,14 @@ export default class AlbumService {
       }
     })
   }
-  public editAlbumName(albumId: string, albumName: string): Promise<any> {
+  public editAlbumName(userId: string, albumId: string, albumName: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try {
         const album = await this.albumModel.findById(albumId)
+        if(String(album.author) !== String(userId)) {
+          reject({code: 400, msg: 'You have no permission to modify this album'})
+        }
         if(!albumName) reject({code: 400, msg: 'Album name cannot be empty'})
         album.title = albumName
         const modifiedAlbum = await album.save()
@@ -192,11 +201,14 @@ export default class AlbumService {
   }
 
   // MARK: Delete methods 
-  public deleteAlbum(albumId: string): Promise<any> {
+  public deleteAlbum(userId: string, albumId: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try {
         const tracksToBeDeleted = await this.trackModel.find({album: new mongoose.Types.ObjectId(albumId)})
+        if(String(tracksToBeDeleted[0]) !== String(userId)) {
+          reject({code: 400, msg: 'You have no permission to delete this album'})
+        }
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Album does not exist'})
         tracksToBeDeleted.forEach(async track => {
           this.trackService.deleteTrack(track._id) 

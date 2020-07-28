@@ -111,7 +111,7 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await trackService.deleteTrack(req.params.id)
+      const responseData = await trackService.deleteTrack(userId, req.params.id)
       responseHandle(res, responseData)
     } catch(err){
       errorHandle(res, err.msg, err.code)

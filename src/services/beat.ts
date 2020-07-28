@@ -32,7 +32,7 @@ export default class BeatService {
       const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, undefined, beatId.toString())
       const beat = await this.beatModel.findById(beatId)
       const user = await this.userModel.findById(userId)
-      if (String(beat.authorId) !== userId)
+      if (String(beat.authorId) !== String(userId))
           reject({ code: 400, msg: 'This Beat does not belong to you' }) //If the playlist and the song exist
       trackObjects.forEach(async (trackObject, index) => {
         if(trackObject.type !== 'drumkit' || trackObject.type !== 'loop'){
@@ -191,7 +191,7 @@ export default class BeatService {
       try{
          // DISPATCHED AND RABBITMQ 
         const beat = await this.beatModel.findById(beatId)
-        if (String(beat.authorId) !== userId)
+        if (String(beat.authorId) !== String(userId))
           reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         const deletedFile = await this.s3Service.deleteFile(beat.coverUrl)
         console.log('deletedFile :', deletedFile)
@@ -210,7 +210,7 @@ export default class BeatService {
     return new Promise(async (resolve, reject) => {
       try {
         const beat = await this.beatModel.findById(beatId)
-        if (String(beat.authorId) !== userId)
+        if (String(beat.authorId) !== String(userId))
           reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         beat.title = beatName
         const modifiedTrack = await beat.save()
@@ -228,7 +228,7 @@ export default class BeatService {
     return new Promise(async (resolve, reject) => {
       try {
         const tracksToBeDeleted = await this.trackModel.find({beat: new mongoose.Types.ObjectId(beatId)})
-        if (String(tracksToBeDeleted[0].authorId) !== userId)
+        if (String(tracksToBeDeleted[0].authorId) !== String(userId))
           reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Beat does not exist'})
         tracksToBeDeleted.forEach(async track => {

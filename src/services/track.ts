@@ -156,10 +156,13 @@ export default class TrackService {
   }
 
   // MARK: Delete
-  public deleteTrack(trackId: string): Promise<any> {
+  public deleteTrack(userId: string, trackId: string): Promise<any> {
     return new Promise( async (resolve, reject) => {
       try {
         const track = await this.trackModel.findById(trackId)
+        if(String(track.authorId) !== String(userId)) {
+          reject({code: 400, msg: 'You have no permission to delete this track'})
+        }
         const deletedTrackImage = await this.s3Service.deleteFile(track.imageUrl)
         console.log('deletedTrackImage :', deletedTrackImage)
         const deletedTrackAudio = await this.s3Service.deleteFile(track.trackUrl)
