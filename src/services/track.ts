@@ -63,7 +63,7 @@ export default class TrackService {
         })
         resolve('Tracks were uploaded successfully')
       } catch (err) {
-        reject({ code: 500, msg: err.msg })
+        reject({ code: 500, msg: err.msg || err.message })
       }
     })
   }
@@ -150,7 +150,7 @@ export default class TrackService {
           resolve(imageUrl)
         }
       } catch(err) {
-        reject({code: 500, msg: err.msg})
+        reject({code: 500, msg: err.msg || err.message})
       }
     })
   }
@@ -171,7 +171,7 @@ export default class TrackService {
         console.log('deletedTrack :', deletedTrack)
         resolve('Track was deleted')
       } catch(err) {
-        reject({code: 500, msg: err.msg})
+        reject({code: 500, msg: err.msg || err.message})
       }
     })
   }

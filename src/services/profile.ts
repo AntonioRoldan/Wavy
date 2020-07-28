@@ -34,7 +34,7 @@ export default class UserConfigService {
           user.description = userInfo.description.data
           await user.save()
         } catch(err) {
-          reject({code: 500, msg: err.message})
+          reject({code: 500, msg: err.msg || err.message})
         }
       }
       if(userInfo.twitter.edit) {
@@ -43,7 +43,7 @@ export default class UserConfigService {
           user.twitterLink = userInfo.twitter.data
           await user.save()
         } catch(err) {
-          reject({code: 500, msg: err.message})
+          reject({code: 500, msg: err.msg || err.message})
         }
       }
       if(userInfo.instagram.edit){
@@ -52,7 +52,7 @@ export default class UserConfigService {
           user.instagramLink = userInfo.instagram.data
           await user.save()
         } catch(err) {
-          reject({code: 500, msg: err.message})
+          reject({code: 500, msg: err.msg || err.message})
         }
       }
       if(userInfo.facebook.edit){
@@ -61,7 +61,7 @@ export default class UserConfigService {
           user.facebookLink= userInfo.facebook.data
           await user.save()
         } catch(err) {
-          reject({code: 500, msg: err.message})
+          reject({code: 500, msg: err.msg || err.message})
         }
       }
       if(userInfo.editAvatar){

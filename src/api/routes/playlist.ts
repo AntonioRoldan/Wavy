@@ -62,7 +62,8 @@ export default (app: Router) => {
     
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
-      const userId = await authServiceInstance.getUserId(token)      const responseData = await playlistServiceInstance.addSongToPlaylist(userId, songId, playlistId)
+      const userId = await authServiceInstance.getUserId(token)      
+      const responseData = await playlistServiceInstance.addSongToPlaylist(userId, songId, playlistId)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -99,7 +100,8 @@ export default (app: Router) => {
     
     try {
     const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
-    const userId = await authServiceInstance.getUserId(token)      const responseData = await playlistServiceInstance.editPlaylistName(userId, name, playlistId)
+    const userId = await authServiceInstance.getUserId(token)      
+    const responseData = await playlistServiceInstance.editPlaylistName(userId, name, playlistId)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)

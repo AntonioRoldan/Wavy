@@ -25,7 +25,6 @@ https://stackoverflow.com/questions/44160422/aws-s3-get-object-using-url
 export default class S3Service {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
-    private s3Service: S3Service,
     @Inject('trackModel') private trackModel: Models.TrackModel,
     @Inject('albumModel') private albumModel: Models.AlbumModel
   ) {}
@@ -38,7 +37,7 @@ export default class S3Service {
         user
           .save()
           .then(user => resolve(user))
-          .catch(err => reject({ code: 500, msg: err.message }))
+          .catch(err => reject({ code: 500, msg: err.msg || err.message }))
       })
     })
   }
@@ -208,7 +207,7 @@ export default class S3Service {
           const imageUrl = await this.uploadSingleTrackImage(userId, imageFile)
           imageUrls.push(imageUrl)
         } catch(err) {
-          reject({code: 500, msg: err.message})
+          reject({code: 500, msg: err.msg || err.message})
         }
       })
       resolve(imageUrls)
@@ -229,7 +228,7 @@ export default class S3Service {
           const trackUrl = albumId ? await this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? await this.uploadSingleTrack(userId, trackFile, undefined, beatId) : await this.uploadSingleTrack(userId, trackFile)
           trackUrls.push(trackUrl)
         } catch(err){
-          reject({code: 500, msg: err.message})
+          reject({code: 500, msg: err.msg || err.message})
         }
       })
       resolve(trackUrls)

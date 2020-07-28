@@ -55,7 +55,7 @@ export default class BeatService {
       })
       resolve('Tracks successfully added to album')
      } catch(err) {
-       reject({code: err.code | 500, msg: err.msg | err.message})
+       reject({code: err.code | 500, msg: err.msg || err.message})
      }
    })
   }
@@ -101,7 +101,7 @@ export default class BeatService {
         })
         resolve('Album was uploaded successfully')
       } catch(err) {
-        reject({code: err.code, msg: err.msg})
+        reject({code: err.code, msg: err.msg || err.message})
       }
     })
   }
@@ -121,7 +121,7 @@ export default class BeatService {
         console.log('matchingSearchAlbums :', matchingSearchBeats)
         resolve(matchingSearchBeats)
       } catch(err) {
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -138,7 +138,7 @@ export default class BeatService {
         })
         resolve(userBeats)
       }catch(err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -178,7 +178,7 @@ export default class BeatService {
         beatData.beat = {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl}
         resolve(beatData)
       } catch(err) {
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -232,7 +232,7 @@ export default class BeatService {
           reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Beat does not exist'})
         tracksToBeDeleted.forEach(async track => {
-          this.trackService.deleteTrack(track._id) 
+          this.trackService.deleteTrack(userId, track._id) 
           const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })
@@ -243,7 +243,7 @@ export default class BeatService {
         console.log('deletedBeat :', deletedBeat)
         resolve('Beat was deleted')
       } catch(err){
-        reject({code:500, msg: err.msg | err.message})
+        reject({code:500, msg: err.msg || err.message})
       }
     })
   }

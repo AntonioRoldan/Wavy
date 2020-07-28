@@ -14,7 +14,6 @@ export default class AlbumService {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
     private s3Service: S3Service,
-
     private trackService: TrackService,
     @Inject('trackModel') private trackModel: Models.TrackModel,
     @Inject('albumModel') private albumModel: Models.AlbumModel
@@ -52,7 +51,7 @@ export default class AlbumService {
       })
       resolve('Tracks successfully added to album')
      } catch(err) {
-      reject({code: err.code | 500, msg: err.msg | err.message})     }
+      reject({code: err.code || 500, msg: err.msg || err.message})     }
    })
   }
 
@@ -72,7 +71,7 @@ export default class AlbumService {
           author: albumAuthor,
           coverUrl: coverUrl,
           genres: albumObject.genres,
-          isPremium: albumModel.isPremium
+          isPremium: albumObject.isPremium
         })
         const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumModel._id.toString())
         tracksObjects.forEach(async (track: any, index: any) => {
@@ -80,12 +79,12 @@ export default class AlbumService {
             authorId: userId,
             authorName: albumAuthor,
             imageUrl: coverUrl,
-            genres: albumObject.genres,
+            genres: track.genres,
             isSingleTrack: false,
             trackUrl: trackUrls[index],
             album: albumModel._id,
             title: track.title,
-            isPremium: albumModel.isPremium ? true : track.isPremium,
+            isPremium: albumModel.isPremium ? true : track.isPremium, // We can have premium tracks and free tracks in an album
             inspiredArtists: track.inspiredArtists,
             type: 'album'
           })
@@ -93,7 +92,7 @@ export default class AlbumService {
         })
         resolve('Album was uploaded successfully')
       } catch(err) {
-        reject({code: err.code, msg: err.msg})
+        reject({code: err.code, msg: err.msg || err.message})
       }
     })
   }
@@ -113,7 +112,7 @@ export default class AlbumService {
         console.log('matchingSearchAlbums :', matchingSearchAlbums)
         resolve(matchingSearchAlbums)
       } catch(err) {
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -130,7 +129,7 @@ export default class AlbumService {
         })
         resolve(userAlbums)
       }catch(err){
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -153,7 +152,7 @@ export default class AlbumService {
         albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl}
         resolve(albumData)
       } catch(err) {
-        reject({code: 500, msg: err.message | err.msg})
+        reject({code: 500, msg: err.message || err.msg})
       }
     })
   }
@@ -211,7 +210,7 @@ export default class AlbumService {
         }
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Album does not exist'})
         tracksToBeDeleted.forEach(async track => {
-          this.trackService.deleteTrack(track._id) 
+          this.trackService.deleteTrack(userId, track._id) 
           const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })
@@ -222,7 +221,7 @@ export default class AlbumService {
         console.log('deletedAlbum :', deletedAlbum)
         resolve('Album was deleted')
       } catch(err){
-        reject({code:500, msg: err.msg | err.message})
+        reject({code:500, msg: err.msg || err.message})
       }
     })
   }

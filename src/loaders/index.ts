@@ -8,7 +8,7 @@ import expressLoader from './express'
 import mongooseLoader from './mongoose'
 import dependancyInjectorLoader from './dependancyInjector'
 
-export default async ({ expressApp }: {expressApp: Express.Application}) => {
+export default async ({ expressApp } : {expressApp: Express.Application}) => {
   const mongoConnection = mongooseLoader()
   await expressLoader({ app: expressApp })
   const userModel = {

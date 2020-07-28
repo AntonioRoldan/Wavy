@@ -44,7 +44,7 @@ export default class AuthService {
         resolve(tokens)
       })
       .catch((err: any) => {
-        return reject({ code: 500, msg: err.message })
+        return reject({ code: 500, msg: err.msg || err.message})
       })
     })
   }
@@ -70,7 +70,7 @@ export default class AuthService {
               })
             })
             .catch(err => {
-              reject({ code: 500, msg: err.message })
+              reject({ code: 500, msg: err.msg || err.message })
             })
         }
       })
@@ -157,7 +157,7 @@ export default class AuthService {
         return this.mailService.confirmationEmail(userData, tokenData.token, host, newTokenCreated)})
       .then((data: any) => resolve(data))
       .catch(err => {
-        return reject({ code: 500, msg: err.message })
+        return reject({ code: 500, msg: err.msg || err.message })
       })
     })
   }
@@ -176,12 +176,12 @@ export default class AuthService {
               try {
                 await user.save()
               } catch(err) {
-                reject({code: 500, msg: err.message})
+                reject({code: 500, msg: err.msg || err.message})
               }
             resolve(tokens)
           })
           .catch(err => {
-            reject({ code: 500, msg: err.msg })
+            reject({ code: 500, msg: err.msg || err.message})
           })
       })
     })
@@ -215,7 +215,7 @@ export default class AuthService {
             msg: 'Invalid email',
           })
         const encodedPassword: string = user.password
-        const passwordIsMatch: boolean = await argon2.verify(userObj.password, encodedPassword);
+        const passwordIsMatch: boolean = await argon2.verify(encodedPassword, userObj.password)
         if (passwordIsMatch) {
           this.createTokens(user)
             .then(async tokens => {
@@ -235,7 +235,7 @@ export default class AuthService {
         const user = await this.userModel.findOne(filter)
         resolve(user._id)
       } catch (err) {
-        reject({code: 500, msg: err.message})
+        reject({code: 500, msg: err.msg || err.message})
       }
     })
   }

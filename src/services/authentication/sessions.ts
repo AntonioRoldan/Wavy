@@ -22,7 +22,7 @@ export default class SessionService {
         return resolve()
       })
       .catch(err => {
-        return reject({code: 500, msg: err.msg})
+        return reject({code: 500, msg: err.msg || err.message})
       })
     })
   }
@@ -34,12 +34,12 @@ export default class SessionService {
         this.invalidatePrevSessions(session.email)
           .then(() => {console.log('session was deleted')})
           .catch(err => {
-            reject({code: err.code, msg: err.msg})
+            reject({code: err.code, msg: err.msg || err.message})
           })
           return resolve('Successful logout')
       })
       .catch(err => {
-        reject({code: err.code, msg: err.msg})
+        reject({code: err.code, msg: err.msg || err.message})
       })
       })
   }
@@ -60,11 +60,11 @@ export default class SessionService {
         })
         .catch(err => {
           console.log('error')
-          return reject({code: 500, msg: err.msg})
+          return reject({code: 500, msg: err.msg || err.message})
         })
       })
       .catch(err => {
-        return reject({code: err.code, msg: err.msg})
+        return reject({code: err.code, msg: err.msg || err.message})
       })
     })
   }
@@ -75,7 +75,7 @@ export default class SessionService {
           return resolve(session)
         })
         .catch(err => {
-          return reject({code: 500, msg: err.msg})
+          return reject({code: 500, msg: err.msg || err.message})
         })  
     })
   }

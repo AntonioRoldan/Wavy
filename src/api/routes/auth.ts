@@ -44,17 +44,19 @@ export default (app: Router) => {
   route.get('/refresh_token', (req: Request, res: Response) => {
     const refreshToken = req.cookies['refresh_token'] // We send and receive our refresh_token as http only to avoid
     const authServiceInstance = Container.get(AuthService) //
-    authServiceInstance.refreshToken(refreshToken).then((tokens) => {
-      res.cookie('refresh_token', tokens.refreshToken, {
-        httpOnly: true,
-        maxAge: 2592000000, // Thirty days in miliseconds
-        secure: false,
-      }) // TODO
-      responseHandle(res, { jwt_token: tokens.token, refresh_token: tokens.refreshToken })
-    })
-    .catch((err) => {
-      errorHandle(res, err.msg, err.code)
-    })
+    authServiceInstance
+      .refreshToken(refreshToken)
+      .then(tokens => {
+        res.cookie('refresh_token', tokens.refreshToken, {
+          httpOnly: true,
+          maxAge: 2592000000, // Thirty days in miliseconds
+          secure: false,
+        }) // TODO
+        responseHandle(res, { jwt_token: tokens.token, refresh_token: tokens.refreshToken })
+      })
+      .catch(err => {
+        errorHandle(res, err.msg, err.code)
+      })
   })
 
   route.get('/verify', (req: Request, res: Response) => {
@@ -62,17 +64,13 @@ export default (app: Router) => {
     const token: string = req.query.id as string
     authServiceInstance
       .checkToken(token) //We check the if the verification token has expired
-      .then(cases => {
-        // We handle different cases (ie user account was deleted already, token expired...)
-        if (cases.tokens) {
-          // On successful email verification we send the tokens
-          res.cookie('refresh_token', cases.tokens.refreshToken, {
-            httpOnly: true,
-            maxAge: 2592000000, // Thirty days in miliseconds
-            secure: false,
-          })
-        }
-        responseHandle(res, cases)
+      .then(tokens => {
+        res.cookie('refresh_token', tokens.refreshToken, {
+          httpOnly: true,
+          maxAge: 2592000000, // Thirty days in miliseconds
+          secure: false,
+        })
+        responseHandle(res, tokens)
       })
       .catch(err => {
         errorHandle(res, err.msg, err.code)
@@ -98,7 +96,7 @@ export default (app: Router) => {
     const authServiceInstance = Container.get(AuthService)
     const userObj = {
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
     }
     authServiceInstance
       .login(userObj, false)

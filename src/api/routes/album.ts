@@ -77,18 +77,19 @@ export default (app: Router) => {
     */ 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }
     if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const albumService = Container.get(AlbumService)
-    const authServiceInstance = Container.get(AuthService)
+    console.log('files :', files)
     const albumObject = JSON.parse(req.body.album)
     if(files['tracks'].length != albumObject.tracks.length) 
     { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
     try {
+      const albumService = Container.get(AlbumService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const successMessage = await albumService.uploadAlbum(userId, albumObject, files['tracks'], files['cover'][0])
       responseHandle(res, successMessage)
     } catch(err){
-      errorHandle(res, err.msg, err.code)
+      errorHandle(res, err.msg || err.message, err.code)
     }
   })
 
@@ -174,7 +175,6 @@ export default (app: Router) => {
    } catch(err){
     errorHandle(res, err.msg, err.code)
    }
-    
   })
 
   route.delete('/delete_track/:id', async (req: Request, res: Response) => {
