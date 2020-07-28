@@ -21,7 +21,7 @@ export default class BeatService {
   ) {}
 
   // MARK: Create methods 
-  public addTracksToExistingBeat(userId: ObjectId, beatId: ObjectId, trackObjects: any[], trackFiles: any[]): Promise<any> {
+  public addTracksToExistingBeat(userId: string, beatId: ObjectId, trackObjects: any[], trackFiles: any[]): Promise<any> {
     /*
     Allows user to add new tracks to an already uploaded album  
     */
@@ -32,6 +32,8 @@ export default class BeatService {
       const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, undefined, beatId.toString())
       const beat = await this.beatModel.findById(beatId)
       const user = await this.userModel.findById(userId)
+      if (String(beat.authorId) !== userId)
+          reject({ code: 400, msg: 'This Beat does not belong to you' }) //If the playlist and the song exist
       trackObjects.forEach(async (trackObject, index) => {
         if(trackObject.type !== 'drumkit' || trackObject.type !== 'loop'){
           reject({code: 400, msg: 'The type specified for track belonging to a beat has to be drumkit or loop'})
@@ -189,6 +191,8 @@ export default class BeatService {
       try{
          // DISPATCHED AND RABBITMQ 
         const beat = await this.beatModel.findById(beatId)
+        if (String(beat.authorId) !== userId)
+          reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         const deletedFile = await this.s3Service.deleteFile(beat.coverUrl)
         console.log('deletedFile :', deletedFile)
         const coverUrl = await this.s3Service.uploadBeatCover(userId, coverFile)
@@ -201,11 +205,13 @@ export default class BeatService {
       }
     })
   }
-  public editBeatName(beatId: string, beatName: string): Promise<any> {
+  public editBeatName(userId: string, beatId: string, beatName: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try {
         const beat = await this.beatModel.findById(beatId)
+        if (String(beat.authorId) !== userId)
+          reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         beat.title = beatName
         const modifiedTrack = await beat.save()
         console.log('modifiedBeat :', modifiedTrack)
@@ -217,11 +223,13 @@ export default class BeatService {
   }
 
   // MARK: Delete methods 
-  public deleteBeat(beatId: string): Promise<any> {
+  public deleteBeat(userId: string, beatId: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try {
         const tracksToBeDeleted = await this.trackModel.find({beat: new mongoose.Types.ObjectId(beatId)})
+        if (String(tracksToBeDeleted[0].authorId) !== userId)
+          reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Beat does not exist'})
         tracksToBeDeleted.forEach(async track => {
           this.trackService.deleteTrack(track._id) 

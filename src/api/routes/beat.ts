@@ -100,7 +100,6 @@ export default (app: Router) => {
     , "hasImage": false, "type": ""}]} 
     req.files = {tracks: [], images: []}
     */
-    // TODO: USER SECURITY CHECK
 
     const files = req.files as Express.Multer.File[]
     if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
@@ -135,7 +134,9 @@ export default (app: Router) => {
     const beatServiceInstance = Container.get(BeatService)
     const authServiceInstance = Container.get(AuthService)
     try {
-      const responseData = await beatServiceInstance.editBeatName(beatId, beatName)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await beatServiceInstance.editBeatName(userId, beatId, beatName)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -162,10 +163,13 @@ export default (app: Router) => {
     // Delete album 
     const beatId = req.params.id
     const beatServiceInstance = Container.get(BeatService)
+    const authServiceInstance = Container.get(AuthService)
      try {
-      const responseData = await beatServiceInstance.deleteBeat(beatId)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await beatServiceInstance.deleteBeat(userId, beatId)
       responseHandle(res, responseData)
-    } catch(err){
+    } catch(err) { 
       errorHandle(res, err.msg, err.code)
     }
   })
