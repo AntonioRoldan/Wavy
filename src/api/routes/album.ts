@@ -75,13 +75,14 @@ export default (app: Router) => {
     }]}
     req.files : {cover: [], tracks: []}
     */ 
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
-    if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    console.log('files :', files)
-    const albumObject = JSON.parse(req.body.album)
-    if(files['tracks'].length != albumObject.tracks.length) 
-    { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
+    
     try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] }
+      if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+      console.log('files :', files)
+      const albumObject = JSON.parse(req.body.album)
+      if(files['tracks'].length != albumObject.tracks.length) 
+      { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       const albumService = Container.get(AlbumService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
@@ -102,12 +103,13 @@ export default (app: Router) => {
     */
     // TODO: USER SECURITY CHECK
 
-    const files = req.files as Express.Multer.File[]
-    if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const albumService = Container.get(AlbumService)
-    const authServiceInstance = Container.get(AuthService)
-    const trackObjects = JSON.parse(req.body.tracks)
+    
     try {
+      const files = req.files as Express.Multer.File[]
+      if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+      const albumService = Container.get(AlbumService)
+      const authServiceInstance = Container.get(AuthService)
+      const trackObjects = JSON.parse(req.body.tracks)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const successMessage = await albumService.addTracksToExistingAlbum(userId.toString(), new mongoose.Types.ObjectId(req.params.id), trackObjects, files)
@@ -118,10 +120,11 @@ export default (app: Router) => {
   })
 
   route.get('/show/:id', async (req: Request, res: Response) => {
-    const albumId = req.params.id 
-    const albumServiceInstance = Container.get(AlbumService)
+    
     try {
-      const albumData = await albumServiceInstance.getAlbumTracks(new mongoose.Types.ObjectId(albumId))
+      const albumId = req.params.id
+      const albumServiceInstance = Container.get(AlbumService)
+      const albumData = await albumServiceInstance.getAlbumTracks(albumId)
       responseHandle(res, albumData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -130,11 +133,12 @@ export default (app: Router) => {
 
   route.put('/edit_name/:id/:name', async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
-    const albumId = req.params.id 
-    const albumName = req.params.name
-    const albumServiceInstance = Container.get(AlbumService)
-    const authServiceInstance = Container.get(AuthService)
+    
     try {
+      const albumId = req.params.id 
+      const albumName = req.params.name
+      const albumServiceInstance = Container.get(AlbumService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await albumServiceInstance.editAlbumName(userId, albumId, albumName)
@@ -146,10 +150,10 @@ export default (app: Router) => {
 
   route.put('/edit_cover/:id', editCoverUpload, async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
-    const albumId = req.params.id 
-    const albumServiceInstance = Container.get(AlbumService)
-    const authServiceInstance = Container.get(AuthService)
      try {
+      const albumId = req.params.id 
+      const albumServiceInstance = Container.get(AlbumService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await albumServiceInstance.editAlbumCover(userId, new mongoose.Types.ObjectId(albumId), req.file)
@@ -164,10 +168,11 @@ export default (app: Router) => {
     Delete album  
     TODO: USER SECURITY CHECK
     */
-   const albumId = req.params.id 
-   const albumServiceInstance = Container.get(AlbumService)
-   const authServiceInstance = Container.get(AuthService)
-   try{
+   
+   try {
+    const albumId = req.params.id 
+    const albumServiceInstance = Container.get(AlbumService)
+    const authServiceInstance = Container.get(AuthService)
     const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
     const userId = await authServiceInstance.getUserId(token)
     const responseData = await albumServiceInstance.deleteAlbum(userId, albumId)
@@ -181,10 +186,10 @@ export default (app: Router) => {
     /* Delete a song from an album 
     TODO: USER SECURITY CHECK
     */
-    const trackId = req.params.id
-    const trackServiceInstance = Container.get(TrackService)
-    const authServiceInstance = Container.get(AuthService)
     try {
+      const trackId = req.params.id
+      const trackServiceInstance = Container.get(TrackService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await trackServiceInstance.deleteTrack(userId, trackId)

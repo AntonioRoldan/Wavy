@@ -6,6 +6,7 @@
 import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import mongoose from 'mongoose'
+mongoose.set('debug', true)
 import TrackService from './track'
 import { ObjectId } from 'bson'
 
@@ -29,7 +30,7 @@ export default class AlbumService {
      try { //DISPATCHED AND RABBITMQ 
       const album = await this.albumModel.findById(albumId)
       const user = await this.userModel.findById(userId)
-      if(String(album.author) !== String(user._id)) {
+      if(String(album.authorId) !== String(user._id)) {
         reject({code: 400, msg: 'You have no permission to modify this album'})
       }
       const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumId.toString())
@@ -68,7 +69,8 @@ export default class AlbumService {
         const coverUrl = await this.s3Service.uploadAlbumCover(userId.toString(), coverFile)
         var albumModel: any = await this.albumModel.create({
           title: albumTitle,
-          author: albumAuthor,
+          authorId: userId,
+          authorName: albumAuthor,
           coverUrl: coverUrl,
           genres: albumObject.genres,
           isPremium: albumObject.isPremium
@@ -106,7 +108,7 @@ export default class AlbumService {
         let matchingSearchAlbums = [] //Array of objects which we will fill with the albums data 
         const searchMatchingAlbumsDocuments = await this.albumModel.find({title: new RegExp(search, 'i')})
         matchingSearchAlbums = searchMatchingAlbumsDocuments.map(async album => {
-          const author = await this.userModel.findById(album.author)
+          const author = await this.userModel.findById(album.authorId)
           return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username}
         })
         console.log('matchingSearchAlbums :', matchingSearchAlbums)
@@ -123,7 +125,7 @@ export default class AlbumService {
       try{
         let userAlbums = []
         const author = await this.userModel.findById(userId)
-        const albumsDocuments = await this.albumModel.find({author: userId})
+        const albumsDocuments = await this.albumModel.find({authorId: userId})
         userAlbums = albumsDocuments.map(album => {
           return { id: album._id,  cover: album.coverUrl, title: album.title, author: author.username}
         })
@@ -138,13 +140,14 @@ export default class AlbumService {
   //       //TODO: Test this 
   // }
 
-  public getAlbumTracks(albumId: ObjectId): Promise<any> {
+  public getAlbumTracks(albumId: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
         let albumData: any = {} // {album: {title: , author:, cover: }, tracks: [{title: , audio: }]}
         const albumDocument = await this.albumModel.findById(albumId)
-        const author = await this.userModel.findById(albumDocument.author)
+        console.log('albumDocument :', albumDocument)
+        const author = await this.userModel.findById(albumDocument.authorId)
         const albumTracks = await this.trackModel.find({album: albumDocument._id})
         albumData.tracks = albumTracks.map(track => {
           return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium}
@@ -164,7 +167,7 @@ export default class AlbumService {
     return new Promise(async (resolve, reject) => {
       try{
         const album = await this.albumModel.findById(albumId)
-        if(String(album.author) !== String(userId)) {
+        if(String(album.authorId) !== String(userId)) {
           reject({code: 400, msg: 'You have no permission to modify this album'})
         }
         const deletedFile = await this.s3Service.deleteFile(album.coverUrl)
@@ -185,7 +188,7 @@ export default class AlbumService {
     return new Promise(async (resolve, reject) => {
       try {
         const album = await this.albumModel.findById(albumId)
-        if(String(album.author) !== String(userId)) {
+        if(String(album.authorId) !== String(userId)) {
           reject({code: 400, msg: 'You have no permission to modify this album'})
         }
         if(!albumName) reject({code: 400, msg: 'Album name cannot be empty'})

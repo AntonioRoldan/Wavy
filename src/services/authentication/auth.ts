@@ -163,7 +163,7 @@ export default class AuthService {
   }
 
   public refreshToken(refreshToken: string): Promise<any> {
-    // This function gets called very hour
+    // This function gets called every hour
     return new Promise((resolve, reject) => {
       const filter = { refreshToken: refreshToken }
       this.userModel.findOne(filter, (err, user) => {

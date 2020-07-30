@@ -15,7 +15,10 @@ export default async ({ expressApp } : {expressApp: Express.Application}) => {
     name: 'userModel',
     model: require('../models/User').default
   }
-  
+  const beatModel = {
+    name: 'beatModel',
+    model: require('../models/Beat').default
+  }
   const tokenModel = {
     name: 'tokenModel',
     model: require('../models/Token').default
@@ -40,6 +43,7 @@ export default async ({ expressApp } : {expressApp: Express.Application}) => {
     mongoConnection,
     models: [
       userModel,
+      beatModel,
       tokenModel,
       trackModel,
       sessionModel,

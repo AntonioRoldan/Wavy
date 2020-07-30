@@ -14,8 +14,11 @@ const albumSchema = new Schema({
     minlength: 1,
     trim: true
   },
-  author: { // We create an array to allow collaborations
-    name: mongoose.Schema.Types.ObjectId
+  authorId: { // We create an array to allow collaborations
+    type: mongoose.Schema.Types.ObjectId
+  },
+  authorName: {
+    type: String
   },
   coverUrl: { // Reference to album's image file stored in a gridFS collection
     type: String

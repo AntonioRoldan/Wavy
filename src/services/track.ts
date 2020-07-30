@@ -13,6 +13,8 @@ export default class TrackService {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
     private s3Service: S3Service,
+
+    @Inject('beatModel') private beatModel: Models.BeatModel,
     @Inject('trackModel') private trackModel: Models.TrackModel,
     @Inject('albumModel') private albumModel: Models.AlbumModel
   ) {}
@@ -163,8 +165,12 @@ export default class TrackService {
         if(String(track.authorId) !== String(userId)) {
           reject({code: 400, msg: 'You have no permission to delete this track'})
         }
-        const deletedTrackImage = await this.s3Service.deleteFile(track.imageUrl)
-        console.log('deletedTrackImage :', deletedTrackImage)
+        const trackBelongsToAlbum = await this.albumModel.find({coverUrl: track.imageUrl})
+        const trackBelongsToBeat = await this.beatModel.find({coverUrl: track.imageUrl})
+        if(!trackBelongsToAlbum && !trackBelongsToBeat) {
+          const deletedTrackImage = await this.s3Service.deleteFile(track.imageUrl)
+          console.log('deletedTrackImage :', deletedTrackImage)
+        }
         const deletedTrackAudio = await this.s3Service.deleteFile(track.trackUrl)
         console.log('deletedTrackAudio :', deletedTrackAudio)
         const deletedTrack =  await this.trackModel.deleteOne({_id: new mongoose.Types.ObjectId(trackId)})
