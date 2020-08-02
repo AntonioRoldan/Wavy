@@ -223,15 +223,15 @@ export default class S3Service {
       if(!trackFiles.length) {
         reject({code: 400, msg: 'No files uploaded'})
       } 
-      trackFiles.forEach( async trackFile => {
-        try {
-          const trackUrl = albumId ? await this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? await this.uploadSingleTrack(userId, trackFile, undefined, beatId) : await this.uploadSingleTrack(userId, trackFile)
-          trackUrls.push(trackUrl)
-        } catch(err){
-          reject({code: 500, msg: err.msg || err.message})
-        }
+      Promise.all(trackFiles.map(async trackFile => {
+          return albumId ? this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? this.uploadSingleTrack(userId, trackFile, undefined, beatId) : this.uploadSingleTrack(userId, trackFile)
+      }))
+      .then(trackUrls => {
+        resolve(trackUrls)
       })
-      resolve(trackUrls)
+      .catch(err => {
+        reject({code: 500, msg: err.msg || err.message})
+      })
     })
   }
 

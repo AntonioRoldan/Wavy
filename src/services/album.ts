@@ -76,6 +76,7 @@ export default class AlbumService {
           isPremium: albumObject.isPremium
         })
         const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumModel._id.toString())
+        console.log('trackUrls :', trackUrls)
         tracksObjects.forEach(async (track: any, index: any) => {
           const trackCreated = await this.trackModel.create({
             authorId: userId,
@@ -152,7 +153,7 @@ export default class AlbumService {
         albumData.tracks = albumTracks.map(track => {
           return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium}
         })
-        albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl}
+        albumData.album = {title: albumDocument.title, authorId: author._id, author: author.username, cover: albumDocument.coverUrl}
         resolve(albumData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})
