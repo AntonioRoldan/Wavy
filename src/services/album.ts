@@ -6,7 +6,6 @@
 import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import mongoose from 'mongoose'
-mongoose.set('debug', true)
 import TrackService from './track'
 import { ObjectId } from 'bson'
 
@@ -76,7 +75,6 @@ export default class AlbumService {
           isPremium: albumObject.isPremium
         })
         const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, albumModel._id.toString())
-        console.log('trackUrls :', trackUrls)
         tracksObjects.forEach(async (track: any, index: any) => {
           const trackCreated = await this.trackModel.create({
             authorId: userId,
@@ -153,7 +151,7 @@ export default class AlbumService {
         albumData.tracks = albumTracks.map(track => {
           return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium}
         })
-        albumData.album = {title: albumDocument.title, authorId: author._id, author: author.username, cover: albumDocument.coverUrl}
+        albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl}
         resolve(albumData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})
@@ -214,7 +212,7 @@ export default class AlbumService {
         }
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Album does not exist'})
         tracksToBeDeleted.forEach(async track => {
-          this.trackService.deleteTrack(userId, track._id) 
+          await this.trackService.deleteTrack(userId, track._id) 
           const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })

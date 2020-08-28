@@ -201,16 +201,14 @@ export default class S3Service {
     /* Returns an array of image urls, only used for single tracks 
      */
     return new Promise(async (resolve, reject) => {
-      var imageUrls: string[] = []
-      imageFiles.forEach(async imageFile => {
-        try {
-          const imageUrl = await this.uploadSingleTrackImage(userId, imageFile)
-          imageUrls.push(imageUrl)
-        } catch(err) {
-          reject({code: 500, msg: err.msg || err.message})
-        }
+      Promise.all(imageFiles.map(imageFile => {
+        return this.uploadSingleTrackImage(userId, imageFile)
+      })).then(imageUrls => {
+        resolve(imageUrls)
       })
-      resolve(imageUrls)
+      .catch(err => {
+        reject({code: 500, msg: err.msg || err.message})
+      })
     })
   }
 
@@ -223,7 +221,7 @@ export default class S3Service {
       if(!trackFiles.length) {
         reject({code: 400, msg: 'No files uploaded'})
       } 
-      Promise.all(trackFiles.map(async trackFile => {
+      Promise.all(trackFiles.map(trackFile => {
           return albumId ? this.uploadSingleTrack(userId, trackFile, albumId) : beatId ? this.uploadSingleTrack(userId, trackFile, undefined, beatId) : this.uploadSingleTrack(userId, trackFile)
       }))
       .then(trackUrls => {

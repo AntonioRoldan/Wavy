@@ -68,7 +68,7 @@ export default (app: Router) => {
 
   // MARK: Album routes 
 
-  route.post('/upload', albumUpload, async (req: Request, res: Response) => {
+  route.post('/upload', albumUpload, async (req: Request, res: Response) => { 
     /* 
     req.body.album : {title: '', tracks: [{
       "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": 

@@ -232,7 +232,7 @@ export default class BeatService {
           reject({ code: 400, msg: 'This Beat does not belong to you' }) 
         if(!tracksToBeDeleted) reject({code: 400, msg: 'Beat does not exist'})
         tracksToBeDeleted.forEach(async track => {
-          this.trackService.deleteTrack(userId, track._id) 
+          await this.trackService.deleteTrack(userId, track._id) 
           const deletedMongoTrack = await this.trackModel.deleteOne({_id: track._id})
           console.log('deletedMongoTrack :', deletedMongoTrack)
         })

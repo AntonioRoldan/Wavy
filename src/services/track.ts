@@ -53,6 +53,7 @@ export default class TrackService {
             : await this.trackModel.create({
                 authorId: userId,
                 authorName: artistName,
+                imageUrl: '',
                 genres: track.genres,
                 isSingleTrack: true,
                 trackUrl: trackUrls[index],
