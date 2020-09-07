@@ -133,10 +133,14 @@ export default class BeatService {
     return new Promise(async (resolve, reject) => {
       try{
         let userBeats = []
+        const user = await this.userModel.findById(loggedInUserId)
         const author = await this.userModel.findById(userId)
+        const userIsSubscribedToAuthor = user.subscriptions.includes(author._id) ? true : false // TODO: Test this 
         const beatsDocuments = await this.beatModel.find({author: userId})
         userBeats = beatsDocuments.map(beat => {
-          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username, canEdit: userId === loggedInUserId ? true : false}
+          const subDiscount = beat.subscriptionDiscount && userIsSubscribedToAuthor ? true : false
+          const normalDiscount = beat.setDiscount 
+          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username,  subDiscount: subDiscount, normalDiscount: normalDiscount, canEdit: userId === loggedInUserId ? true : false}
         })
         resolve(userBeats)
       }catch(err){
@@ -154,12 +158,14 @@ export default class BeatService {
         const beatDocument = await this.beatModel.findById(beatId)
         const author = await this.userModel.findById(beatDocument.authorId)
         const beatTracks = await this.trackModel.find({beat: beatDocument._id})
+        const subDiscount = beatDocument.subscriptionDiscount && userIsSubscribedToAuthor ? true : false
         userIsSubscribedToAuthor = user.subscriptions.includes(author._id) ? true : false // TODO: Test this 
         beatData.title = beatDocument.title
         beatData.author = beatDocument.authorName
         beatData.price = beatDocument.subscriptionDiscount && userIsSubscribedToAuthor ? Number(beatDocument.subscriptionDiscount) * Number(beatDocument.price) : beatDocument.setDiscount ? Number(beatDocument.price) * Number(beatDocument.discount) : Number(beatDocument.price)
         beatData.tracksNumber = beatTracks.length
-        beatData.discount = beatDocument.discount
+        beatData.subDiscount = subDiscount
+        beatData.discount = subDiscount ? beatDocument.discount : beatDocument.subscriptionDiscount
         resolve(beatData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})
