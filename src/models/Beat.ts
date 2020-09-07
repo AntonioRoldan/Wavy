@@ -28,7 +28,7 @@ const beatSchema = new Schema({
     trim: true
   },
   subscriptionDiscount: {
-    type: Number, 
+    type: Number,
     default: 0.0
   },
   setDiscount: {

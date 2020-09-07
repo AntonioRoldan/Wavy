@@ -157,7 +157,7 @@ export default class BeatService {
         userIsSubscribedToAuthor = user.subscriptions.includes(author._id) ? true : false // TODO: Test this 
         beatData.title = beatDocument.title
         beatData.author = beatDocument.authorName
-        beatData.price = userIsSubscribedToAuthor ? Number(beatDocument.subscriptionDiscount) * Number(beatDocument.price) : beatDocument.setDiscount ? Number(beatDocument.price) * Number(beatDocument.discount) : Number(beatDocument.price)
+        beatData.price = beatDocument.subscriptionDiscount && userIsSubscribedToAuthor ? Number(beatDocument.subscriptionDiscount) * Number(beatDocument.price) : beatDocument.setDiscount ? Number(beatDocument.price) * Number(beatDocument.discount) : Number(beatDocument.price)
         beatData.tracksNumber = beatTracks.length
         beatData.discount = beatDocument.discount
         resolve(beatData)
