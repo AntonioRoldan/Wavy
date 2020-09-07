@@ -7,6 +7,7 @@ import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import { ObjectId } from 'bson'
 import mongoose from 'mongoose'
+import { EventDispatcher, EventDispatcherInterface } from '../decorators/eventDispatcher'
 
 @Service()
 export default class TrackService {
@@ -16,7 +17,10 @@ export default class TrackService {
 
     @Inject('beatModel') private beatModel: Models.BeatModel,
     @Inject('trackModel') private trackModel: Models.TrackModel,
-    @Inject('albumModel') private albumModel: Models.AlbumModel
+    @Inject('albumModel') private albumModel: Models.AlbumModel,
+
+    @EventDispatcher() private eventDispatcher : EventDispatcherInterface
+
   ) {}
 
   // MARK: Create 

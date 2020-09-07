@@ -8,6 +8,7 @@ import multer from 'multer'
 import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import TrackService from '../../services/track'
+import { EventDispatcher, EventDispatcherInterface } from '../decorators/eventDispatcher'
 import { Container } from 'typedi'
 
 const isAuth = require('../middleware/isAuth')

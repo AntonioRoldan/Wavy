@@ -7,6 +7,7 @@ import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import mongoose from 'mongoose'
 import TrackService from './track'
+import { EventDispatcher, EventDispatcherInterface } from '../decorators/eventDispatcher'
 import { ObjectId } from 'bson'
 
 @Service()
@@ -16,7 +17,9 @@ export default class AlbumService {
     private s3Service: S3Service,
     private trackService: TrackService,
     @Inject('trackModel') private trackModel: Models.TrackModel,
-    @Inject('albumModel') private albumModel: Models.AlbumModel
+    @Inject('albumModel') private albumModel: Models.AlbumModel,
+
+    @EventDispatcher() private eventDispatcher: EventDispatcherInterface
   ) {}
 
   // MARK: Create methods 
