@@ -192,7 +192,6 @@ export default class BeatService {
   }
 
   // Update 
-
   public editBeatCover(userId: string, beatId: ObjectId, coverFile: any): Promise<any> {
     //TODO: Test this 
     return new Promise(async (resolve, reject) => {
