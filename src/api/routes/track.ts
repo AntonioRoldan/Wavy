@@ -7,7 +7,6 @@
 import multer from 'multer'
 import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
-import AlbumService from '../../services/album'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
 
@@ -59,14 +58,14 @@ export default (app: Router) => {
     , "hasImage": false}]} 
     req.files = {tracks: [], images: []}
     */
-    if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const trackService = Container.get(TrackService)
-    const authServiceInstance = Container.get(AuthService)
-    const trackObjects = JSON.parse(req.body.tracks)
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
-    if(files['tracks'].length != trackObjects.tracks.length || files['images'].length != trackObjects.tracks.length) 
-    { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
     try {
+      if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+      const trackService = Container.get(TrackService)
+      const authServiceInstance = Container.get(AuthService)
+      const trackObjects = JSON.parse(req.body.tracks)
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] }
+      if(files['tracks'].length != trackObjects.tracks.length || files['images'].length != trackObjects.tracks.length) 
+      { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const successMessage = await trackService.uploadTracks(userId, trackObjects.tracks, files['tracks'], files['images'])
@@ -78,10 +77,10 @@ export default (app: Router) => {
   // Edit track image 
   route.put('/edit_image/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
   async (req: Request, res: Response) => {
-    if(!req.file) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-    const trackService = Container.get(TrackService)
-    const authServiceInstance = Container.get(AuthService)
     try {
+      if(!req.file) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
+      const trackService = Container.get(TrackService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const imageUrl = await trackService.editTrackImage(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
@@ -92,9 +91,9 @@ export default (app: Router) => {
   })
 
   route.put('/edit_name/:track_id/:name', async (req: Request, res: Response) => {
-    const trackService = Container.get(TrackService)
-    const authServiceInstance = Container.get(AuthService)
     try {
+      const trackService = Container.get(TrackService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await trackService.editTrackName(userId, req.params.track_id, req.params.name)
@@ -103,6 +102,19 @@ export default (app: Router) => {
       errorHandle(res, err.msg, err.code)
     }
   })
+
+  route.get('/search/', async (req: Request, res: Response) => {
+    // /search?term=value 
+    try {
+     const searchTerm = req.query.term as string
+     const trackServiceInstance = Container.get(TrackService)
+     const responseData = await trackServiceInstance.searchTracks(searchTerm)
+     responseHandle(res, responseData)
+
+   } catch(err) {
+     errorHandle(res, err.msg, err.code)
+   }
+ })
 
   route.delete('/delete/:id', async (req: Request, res: Response) => {
     // Delete a single track 

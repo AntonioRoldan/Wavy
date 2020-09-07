@@ -148,6 +148,18 @@ export default (app: Router) => {
     }
   })
 
+  route.get('/search', async (req: Request, res: Response) => {
+    // /search?term=value 
+    try {
+      const searchTerm = req.query.term as string
+      const albumServiceInstance = Container.get(AlbumService)
+      const responseData = await albumServiceInstance.searchAlbum(searchTerm)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
   route.put('/edit_cover/:id', editCoverUpload, async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
      try {

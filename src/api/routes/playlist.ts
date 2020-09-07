@@ -25,10 +25,10 @@ export default (app: Router) => {
   app.use('/playlists', route)
 
   route.post('/create/:name', async (req: Request, res: Response) => {
-    const name = req.params.name 
-    const playlistServiceInstance = Container.get(PlaylistService)
-    const authServiceInstance = Container.get(AuthService)
     try {
+      const name = req.params.name 
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await playlistServiceInstance.createPlaylist(userId, name)
@@ -39,12 +39,11 @@ export default (app: Router) => {
   })
 
   route.post('/add_album/:playlist_id/:album_id', async (req:Request, res:Response) => {
-    const playlistId = req.params.playlist_id
-    const albumId = req.params.album_id
-    const playlistServiceInstance = Container.get(PlaylistService)
-    const authServiceInstance = Container.get(AuthService)
-    
     try {
+      const playlistId = req.params.playlist_id
+      const albumId = req.params.album_id
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await playlistServiceInstance.addAlbumToPlaylist(userId, playlistId, albumId)
@@ -54,13 +53,12 @@ export default (app: Router) => {
     }
   })
 
-  route.post('/add_song/:playlist_id/:song_id', async (req: Request, res: Response) => {
-    const playlistId = req.params.playlist_id
-    const songId = req.params.song_id
-    const playlistServiceInstance = Container.get(PlaylistService)
-    const authServiceInstance = Container.get(AuthService)
-    
+  route.post('/add_song/:playlist_id/:song_id', async (req: Request, res: Response) => {    
     try {
+      const playlistId = req.params.playlist_id
+      const songId = req.params.song_id
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)      
       const responseData = await playlistServiceInstance.addSongToPlaylist(userId, songId, playlistId)
@@ -71,9 +69,9 @@ export default (app: Router) => {
   })
 
   route.get('/search', async (req: Request, res: Response) => {
-    const searchTerm = req.query.term as string || ''
-    const playlistServiceInstance = Container.get(PlaylistService)
     try {
+      const searchTerm = req.query.term as string || ''
+      const playlistServiceInstance = Container.get(PlaylistService)
       const responseData = await playlistServiceInstance.searchPlaylist(searchTerm)
       responseHandle(res, responseData)
     } catch(err) {
@@ -81,10 +79,11 @@ export default (app: Router) => {
     }
   })
 
+
   route.get('/show/:playlist_id', async (req: Request, res: Response) => {
-    const playlistId = req.params.playlist_id
-    const playlistServiceInstance = Container.get(PlaylistService)
     try {
+      const playlistId = req.params.playlist_id
+      const playlistServiceInstance = Container.get(PlaylistService)
       const responseData = await playlistServiceInstance.showPlaylistTracks(playlistId)
       responseHandle(res, responseData)
     } catch(err) {
@@ -93,15 +92,15 @@ export default (app: Router) => {
   })
 
   route.put('/edit_name/:name/:playlist_id', async (req: Request, res:Response) => {
-    const name = req.params.name
-    const playlistId = req.params.playlist_id
-    const playlistServiceInstance = Container.get(PlaylistService)
-    const authServiceInstance = Container.get(AuthService)
-    
+  
     try {
-    const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
-    const userId = await authServiceInstance.getUserId(token)      
-    const responseData = await playlistServiceInstance.editPlaylistName(userId, name, playlistId)
+      const name = req.params.name
+      const playlistId = req.params.playlist_id
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const authServiceInstance = Container.get(AuthService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)      
+      const responseData = await playlistServiceInstance.editPlaylistName(userId, name, playlistId)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)
@@ -109,11 +108,11 @@ export default (app: Router) => {
   })
 
   route.delete('/delete/:playlist_id', async (req: Request, res: Response) => {
-    const playlistId = req.params.playlist_id
-    const playlistServiceInstance = Container.get(PlaylistService)
-    const authServiceInstance = Container.get(AuthService)
-    
+  
     try {
+      const playlistId = req.params.playlist_id
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)      
       const responseData = await playlistServiceInstance.deletePlaylist(userId, playlistId)
@@ -124,12 +123,12 @@ export default (app: Router) => {
   })
 
   route.delete('/remove_song/:playlist_id/:song_id', async (req: Request, res: Response) => {
-    const playlistId = req.params.playlist_id
-    const songId = req.params.song_id
-    const playlistServiceInstance = Container.get(PlaylistService)
-    const authServiceInstance = Container.get(AuthService)
    
     try {
+      const playlistId = req.params.playlist_id
+      const songId = req.params.song_id
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await playlistServiceInstance.removeSongFromPlaylist(userId, songId, playlistId)

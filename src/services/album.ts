@@ -118,7 +118,7 @@ export default class AlbumService {
     })
   }
 
-  public getUserAlbums(userId: ObjectId): Promise<any> {
+  public getUserAlbums(userId: string, loggedInUserId: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
@@ -126,7 +126,7 @@ export default class AlbumService {
         const author = await this.userModel.findById(userId)
         const albumsDocuments = await this.albumModel.find({authorId: userId})
         userAlbums = albumsDocuments.map(album => {
-          return { id: album._id,  cover: album.coverUrl, title: album.title, author: author.username}
+          return { id: album._id,  cover: album.coverUrl, title: album.title, author: author.username, canEdit: userId === loggedInUserId ? true : false}
         })
         resolve(userAlbums)
       }catch(err){

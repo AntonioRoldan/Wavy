@@ -17,6 +17,7 @@ export default class BeatService {
 
     private trackService: TrackService,
     @Inject('trackModel') private trackModel: Models.TrackModel,
+    @Inject('albumModel') private albumModel: Models.AlbumModel,
     @Inject('beatModel') private beatModel: Models.BeatModel
   ) {}
 
@@ -35,7 +36,7 @@ export default class BeatService {
       if (String(beat.authorId) !== String(userId))
           reject({ code: 400, msg: 'This Beat does not belong to you' }) //If the playlist and the song exist
       trackObjects.forEach(async (trackObject, index) => {
-        if(trackObject.type !== 'drumkit' || trackObject.type !== 'loop'){
+        if(trackObject.type !== 'drumkit' && trackObject.type !== 'loop'){
           reject({code: 400, msg: 'The type specified for track belonging to a beat has to be drumkit or loop'})
         }
         const createdTrack = await this.trackModel.create({
@@ -67,6 +68,7 @@ export default class BeatService {
       const user = await this.userModel.findById(userId)
       const beatAuthor = user.username
       const beatTitle = beatObject.title
+      if(!beatTitle) reject({code: 400, msg: 'Beat must have a title'})
       const tracksObjects: any = beatObject.tracks // Same as track object for an album but we add a type property to specify whether it is a loop or a drumkit 
       try {
         if(!coverFile) reject({code: 400, msg: 'Cover image not provided'})  // DISPATCHED AND RABBITMQ 
@@ -126,7 +128,7 @@ export default class BeatService {
     })
   }
 
-  public getUserBeats(userId: ObjectId): Promise<any> {
+  public getUserBeats(userId: string, loggedInUserId: string): Promise<any> {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
@@ -134,7 +136,7 @@ export default class BeatService {
         const author = await this.userModel.findById(userId)
         const beatsDocuments = await this.beatModel.find({author: userId})
         userBeats = beatsDocuments.map(beat => {
-          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username}
+          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username, canEdit: userId === loggedInUserId ? true : false}
         })
         resolve(userBeats)
       }catch(err){
@@ -244,6 +246,27 @@ export default class BeatService {
         resolve('Beat was deleted')
       } catch(err){
         reject({code:500, msg: err.msg || err.message})
+      }
+    })
+  }
+
+  public deleteTrack(userId: string, trackId: string): Promise<any> {
+    return new Promise( async (resolve, reject) => {
+      try {
+        const track = await this.trackModel.findById(trackId)
+        if(String(track.authorId) !== String(userId)) {
+          reject({code: 400, msg: 'You have no permission to delete this track'})
+        }
+        const trackBelongsToAlbum = await this.albumModel.find({coverUrl: track.imageUrl})
+        const trackBelongsToBeat = await this.beatModel.find({coverUrl: track.imageUrl})
+        if(trackBelongsToAlbum) reject({code: 400, msg: 'This route deletes beat tracks not album tracks'})
+        const deletedTrackAudio = await this.s3Service.deleteFile(track.trackUrl)
+        console.log('deletedTrackAudio :', deletedTrackAudio)
+        const deletedTrack =  await this.trackModel.deleteOne({_id: new mongoose.Types.ObjectId(trackId)})
+        console.log('deletedTrack :', deletedTrack)
+        resolve('Track was deleted')
+      } catch(err) {
+        reject({code: 500, msg: err.msg || err.message})
       }
     })
   }
