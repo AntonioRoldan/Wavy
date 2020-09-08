@@ -17,11 +17,15 @@ import AuthService from '../../services/authentication/auth'
 import AlbumService from '../../services/album'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
-
+import { publishToQueue } from '../../services/mq'
+import events from '../../subscribers/events'
+import { EventDispatcher } from 'event-dispatch'
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'
 
 export const route = Router()
+
+const eventDispatcher = new EventDispatcher()
 
 const errorHandle = (res: Response, errorMessage: string, code: number): void => {
   errorMessage = errorMessage || 'Unknown error'
@@ -33,6 +37,7 @@ const errorHandle = (res: Response, errorMessage: string, code: number): void =>
 const responseHandle = (res: Response, data: any, code: number = 200): void => {
   res.status(code).send(data)
 }
+
 
 const tracksFileFilter = (req: Request, file: any, cb: any) => {
   if(file.fieldname === 'tracks'){
@@ -83,12 +88,16 @@ export default (app: Router) => {
       const albumObject = JSON.parse(req.body.album)
       if(files['tracks'].length != albumObject.tracks.length) 
       { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
-      const albumService = Container.get(AlbumService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.uploadAlbum(userId, albumObject, files['tracks'], files['cover'][0])
-      responseHandle(res, successMessage)
+      publishToQueue('upload-album', JSON.stringify({userId, albumObject, trackFiles: files['tracks'], coverFile: files['cover'][0]}))
+      .then(() => {
+        eventDispatcher.dispatch(events.album.uploadAlbum) // We run the queue's worker 
+        responseHandle(res, 'Album is uploading')
+      }).catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err){
       errorHandle(res, err.msg || err.message, err.code)
     }

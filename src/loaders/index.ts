@@ -7,7 +7,8 @@
 import expressLoader from './express'
 import mongooseLoader from './mongoose'
 import dependancyInjectorLoader from './dependancyInjector'
-
+//We have to import at least all the events once so they can be triggered
+import './events'
 export default async ({ expressApp } : {expressApp: Express.Application}) => {
   const mongoConnection = mongooseLoader()
   await expressLoader({ app: expressApp })

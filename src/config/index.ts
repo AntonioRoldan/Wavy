@@ -43,7 +43,9 @@ const config = {
 
   api: {
     prefix: '/api'
-  }
+  },
+
+  amqpURL: process.env.AMQP_URL
 }
 
 export default config
