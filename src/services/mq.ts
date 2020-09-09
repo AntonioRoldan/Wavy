@@ -21,6 +21,12 @@ export const publishToQueue = async (queueName: string, data: any) => {
   ch.sendToQueue(queueName, new Buffer(data), {persistent: true})
 }
 
+export const consumeFromQueue = async (queueName: string, cb: any) => {
+  ch.consume(queueName, async (msg) => {
+    cb(msg, ch)
+  }, {noAck: false})
+}
+
 process.on('exit', (code) => {
   ch.close((err) => {
     if (err) throw new Error(err.message || err.msg) 

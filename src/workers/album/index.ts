@@ -1,3 +1,3 @@
-import { runUploadConsumer } from './album'
+import { runUploadConsumer, runAddNewTracksConsumer, runDeleteAlbumConsumer, runEditCoverConsumer, runDeleteAlbumTrackConsumer } from './album'
 
-export { runUploadConsumer }
+export { runUploadConsumer, runAddNewTracksConsumer, runDeleteAlbumConsumer, runEditCoverConsumer, runDeleteAlbumTrackConsumer }

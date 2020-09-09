@@ -17,11 +17,12 @@ import AuthService from '../../services/authentication/auth'
 import AlbumService from '../../services/album'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
-import { publishToQueue } from '../../services/mq'
+import { publishToQueue, publishToQueue } from '../../services/mq'
 import events from '../../subscribers/events'
-import { EventDispatcher } from 'event-dispatch'
+import eventDispatcher, { EventDispatcher } from 'event-dispatch'
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'
+import config from '../../config'
 
 export const route = Router()
 
@@ -91,7 +92,7 @@ export default (app: Router) => {
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      publishToQueue('upload-album', JSON.stringify({userId, albumObject, trackFiles: files['tracks'], coverFile: files['cover'][0]}))
+      publishToQueue(config.queues.uploadAlbum, JSON.stringify({userId, albumObject, trackFiles: files['tracks'], coverFile: files['cover'][0]}))
       .then(() => {
         eventDispatcher.dispatch(events.album.uploadAlbum) // We run the queue's worker 
         responseHandle(res, 'Album is uploading')
@@ -103,7 +104,7 @@ export default (app: Router) => {
     }
   })
 
-  route.post('/add_new_tracks/:id', tracksToExistingAlbumUpload, async (req: Request, res: Response) => {
+  route.post('/add_new_tracks/:albumId', tracksToExistingAlbumUpload, async (req: Request, res: Response) => {
     /* 
     req.body.tracks = {tracks: [{
     "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": false
@@ -116,13 +117,13 @@ export default (app: Router) => {
     try {
       const files = req.files as Express.Multer.File[]
       if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-      const albumService = Container.get(AlbumService)
       const authServiceInstance = Container.get(AuthService)
       const trackObjects = JSON.parse(req.body.tracks)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await albumService.addTracksToExistingAlbum(userId.toString(), new mongoose.Types.ObjectId(req.params.id), trackObjects, files)
-      responseHandle(res, successMessage)
+      await publishToQueue(config.queues.addNewTracksToAlbum, JSON.stringify({userId, albumId: req.params.albumId, trackObjects, trackFiles: files}))
+      eventDispatcher.dispatch(events.album.addNewTracks)
+      responseHandle(res, `Uploading new tracks to ${req.params.albumId}`)
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
@@ -177,8 +178,9 @@ export default (app: Router) => {
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await albumServiceInstance.editAlbumCover(userId, new mongoose.Types.ObjectId(albumId), req.file)
-      responseHandle(res, responseData)
+      await publishToQueue(config.queues.editAlbumCover, JSON.stringify({userId, albumId, coverFile: req.file}))
+      eventDispatcher.dispatch(events.album.editCover)
+      responseHandle(res, 'Uploading new image file')
     } catch(err) {
       errorHandle(res, err.msg, err.code)
     }
@@ -196,8 +198,9 @@ export default (app: Router) => {
     const authServiceInstance = Container.get(AuthService)
     const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
     const userId = await authServiceInstance.getUserId(token)
-    const responseData = await albumServiceInstance.deleteAlbum(userId, albumId)
-    responseHandle(res, responseData)
+    await publishToQueue(config.queues.deleteAlbum, JSON.stringify({userId, albumId}))
+    eventDispatcher.dispatch(events.album.deleteAlbum)
+    responseHandle(res, 'Album being deleted')
    } catch(err){
     errorHandle(res, err.msg, err.code)
    }
@@ -214,6 +217,8 @@ export default (app: Router) => {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await trackServiceInstance.deleteTrack(userId, trackId)
+      publishToQueue(config.queues.deleteAlbumTrack, JSON.stringify({userId, trackId}))
+      eventDispatcher.dispatch(events.album.deleteAlbumTrack)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)

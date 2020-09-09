@@ -1,8 +1,7 @@
-/*  
-  Copyright (c) 2020 Antonio Roldan 
-  All rights reserved 
+/*
+  Copyright (c) 2020 Antonio Roldan
+  All rights reserved
 */
-
 
 import dotenv from 'dotenv'
 
@@ -45,7 +44,18 @@ const config = {
     prefix: '/api'
   },
 
-  amqpURL: process.env.AMQP_URL
+  amqpURL: process.env.AMQP_URL,
+
+  queues: {
+    uploadAlbum: 'upload-album',
+    addNewTracksToAlbum: 'add-new-tracks-to-album',
+    editAlbumCover: 'edit-album-cover',
+    deleteAlbum: 'delete-album',
+    deleteAlbumTrack: 'delete-album-track',
+    uploadTracks: 'upload-tracks',
+    editTrackCover: 'edit-track-cover',
+    deleteTrack: 'delete-track'
+  }
 }
 
 export default config
