@@ -91,7 +91,7 @@ export default class AlbumService {
             inspiredArtists: track.inspiredArtists,
             type: 'album'
           })
-          console.log('Track created :', trackCreated)
+          console.log('Album created :', trackCreated)
         })
         resolve('Album was uploaded successfully')
       } catch(err) {

@@ -1,3 +1,3 @@
-import { runUploadConsumer } from './upload'
+import { runUploadConsumer } from './album'
 
 export { runUploadConsumer }
