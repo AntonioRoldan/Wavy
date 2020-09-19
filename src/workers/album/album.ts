@@ -12,7 +12,7 @@ var amqp = require('amqplib/callback_api')
 export const runUploadConsumer = async () => {
   return new Promise( async (resolve, reject) => {
     try { 
-      await consumeFromQueue(config.queues.uploadAlbum, async (msg: any, ch: any) => {
+      await consumeFromQueue(config.queues.album.upload, async (msg: any, ch: any) => {
         const parameters = JSON.parse(msg.content)
         const albumServiceInstance = Container.get(AlbumService)
         const successMessage = await albumServiceInstance.uploadAlbum(parameters.userId, parameters.albumObject, parameters.trackFiles, parameters.coverFile)
@@ -29,7 +29,7 @@ export const runUploadConsumer = async () => {
 export const runAddNewTracksConsumer = async () => {
   return new Promise( async (resolve, reject) => {
     try { 
-      await consumeFromQueue(config.queues.addNewTracksToAlbum, async (msg: any, ch: any) => {
+      await consumeFromQueue(config.queues.album.addNewTracks, async (msg: any, ch: any) => {
         const parameters = JSON.parse(msg.content)
           console.log('parameters :', parameters)
           const albumServiceInstance = Container.get(AlbumService)
@@ -47,7 +47,7 @@ export const runAddNewTracksConsumer = async () => {
 export const runEditCoverConsumer = async () => {
   return new Promise( async (resolve, reject) => {
     try { 
-      await consumeFromQueue(config.queues.editAlbumCover, async (msg: any, ch: any) => {
+      await consumeFromQueue(config.queues.album.editCover, async (msg: any, ch: any) => {
         const parameters = JSON.parse(msg.content)
         console.log('parameters :', parameters)
         const albumServiceInstance = Container.get(AlbumService)
@@ -65,7 +65,7 @@ export const runEditCoverConsumer = async () => {
 export const runDeleteAlbumConsumer = async () => {
   return new Promise( async (resolve, reject) => {
     try { 
-      await consumeFromQueue(config.queues.deleteAlbum, async (msg: any, ch: any) => {
+      await consumeFromQueue(config.queues.album.delete, async (msg: any, ch: any) => {
         const parameters = JSON.parse(msg.content)
         console.log('parameters :', parameters)
         const albumServiceInstance = Container.get(AlbumService)
@@ -83,7 +83,7 @@ export const runDeleteAlbumConsumer = async () => {
 export const runDeleteAlbumTrackConsumer = async () => {
   return new Promise( async (resolve, reject) => {
     try { 
-      await consumeFromQueue(config.queues.deleteAlbumTrack, async (msg: any, ch: any) => {
+      await consumeFromQueue(config.queues.album.deleteTrack, async (msg: any, ch: any) => {
         const parameters = JSON.parse(msg.content)
         console.log('parameters :', parameters)
         const trackServiceInstance = Container.get(TrackService)

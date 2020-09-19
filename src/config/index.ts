@@ -47,14 +47,29 @@ const config = {
   amqpURL: process.env.AMQP_URL,
 
   queues: {
-    uploadAlbum: 'upload-album',
-    addNewTracksToAlbum: 'add-new-tracks-to-album',
-    editAlbumCover: 'edit-album-cover',
-    deleteAlbum: 'delete-album',
-    deleteAlbumTrack: 'delete-album-track',
-    uploadTracks: 'upload-tracks',
-    editTrackCover: 'edit-track-cover',
-    deleteTrack: 'delete-track'
+    album: {
+      upload: 'upload-album',
+      addNewTracks: 'add-new-tracks-to-album',
+      editCover: 'edit-album-cover',
+      delete: 'delete-album',
+      deleteTrack: 'delete-album-track'
+    },
+    track: {
+      upload: 'upload-tracks',
+      editCover: 'edit-track-cover',
+      delete: 'delete-track'
+    },
+    beat: {
+      upload: 'upload-beat',
+      editCover: 'edit-beat-cover',
+      delete: 'delete-beat',
+      deleteTrack: 'delete-beat-track'
+    },
+    payment: {
+      beat: 'beat-payment',
+      tutorial: 'tutorial-payment',
+      subscription: 'subscription-payment'
+    }
   }
 }
 
