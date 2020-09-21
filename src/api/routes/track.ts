@@ -9,9 +9,13 @@ import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
-
+import { publishToQueue } from '../../services/mq'
+import events from '../../subscribers/events'
+import { EventDispatcher } from 'event-dispatch'
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'
+
+const eventDispatcher = new EventDispatcher()
 
 export const route = Router()
 

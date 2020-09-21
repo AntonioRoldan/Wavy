@@ -9,7 +9,7 @@ import { runUploadConsumer, runAddNewTracksConsumer, runDeleteAlbumConsumer, run
 @EventSubscriber()
 export default class AlbumSubscriber {
 
-  @On(events.album.uploadAlbum)
+  @On(events.album.upload)
   public async onAlbumUpload() {
     try { 
       const successMessage = await runUploadConsumer()
@@ -39,7 +39,7 @@ export default class AlbumSubscriber {
     }
   }
 
-  @On(events.album.deleteAlbum)
+  @On(events.album.delete)
   public async onDeleteAlbum() {
     try { 
       const successMessage = await runDeleteAlbumConsumer()
@@ -49,7 +49,7 @@ export default class AlbumSubscriber {
     }
   }
 
-  @On(events.album.deleteAlbumTrack)
+  @On(events.album.deleteTrack)
   public async onDeleteAlbumTrack() {
     try { 
       const successMessage = await runDeleteAlbumTrackConsumer()

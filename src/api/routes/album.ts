@@ -94,7 +94,7 @@ export default (app: Router) => {
       const userId = await authServiceInstance.getUserId(token)
       publishToQueue(config.queues.album.upload, JSON.stringify({userId, albumObject, trackFiles: files['tracks'], coverFile: files['cover'][0]}))
       .then(() => {
-        eventDispatcher.dispatch(events.album.uploadAlbum) // We run the queue's worker 
+        eventDispatcher.dispatch(events.album.upload) // We run the queue's worker 
         responseHandle(res, 'Album is uploading')
       }).catch((err) => {
         errorHandle(res, err.msg || err.message, err.code)
@@ -199,7 +199,7 @@ export default (app: Router) => {
     const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
     const userId = await authServiceInstance.getUserId(token)
     await publishToQueue(config.queues.album.delete, JSON.stringify({userId, albumId}))
-    eventDispatcher.dispatch(events.album.deleteAlbum)
+    eventDispatcher.dispatch(events.album.delete)
     responseHandle(res, 'Album being deleted')
    } catch(err){
     errorHandle(res, err.msg, err.code)
@@ -218,7 +218,7 @@ export default (app: Router) => {
       const userId = await authServiceInstance.getUserId(token)
       const responseData = await trackServiceInstance.deleteTrack(userId, trackId)
       publishToQueue(config.queues.album.deleteTrack, JSON.stringify({userId, trackId}))
-      eventDispatcher.dispatch(events.album.deleteAlbumTrack)
+      eventDispatcher.dispatch(events.album.deleteTrack)
       responseHandle(res, responseData)
     } catch(err) {
       errorHandle(res, err.msg, err.code)

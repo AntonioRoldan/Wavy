@@ -4,11 +4,11 @@
 */
 export default {
   album: {
-    uploadAlbum: 'onAlbumUpload',
+    upload: 'onAlbumUpload',
     addNewTracks: 'onAddNewTracksToAlbum',
     editCover: 'onEditAlbumCover',
-    deleteAlbum: 'onDeleteAlbum',
-    deleteAlbumTrack: 'onDeleteAlbumTrack'
+    delete: 'onDeleteAlbum',
+    deleteTrack: 'onDeleteAlbumTrack'
   },
   track: {
     upload: 'onTrackUpload',
@@ -17,6 +17,8 @@ export default {
   },
   beat: {
     upload: 'onBeatUpload',
-    
+    editCover: 'onBeatEditCover',
+    deleteTrack: 'onDeleteBeatTrack',
+    delete: 'onDeleteBeat'
   }
 }
