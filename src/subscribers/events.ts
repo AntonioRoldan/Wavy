@@ -13,7 +13,7 @@ export default {
   track: {
     upload: 'onTrackUpload',
     editCover: 'onEditTrackCover',
-    deleteTrack: 'onDeleteSingleTrack'
+    delete: 'onDeleteSingleTrack'
   },
   beat: {
     upload: 'onBeatUpload',

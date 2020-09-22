@@ -9,6 +9,7 @@ import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
+import config from '../../config'
 import { publishToQueue } from '../../services/mq'
 import events from '../../subscribers/events'
 import { EventDispatcher } from 'event-dispatch'
@@ -72,6 +73,13 @@ export default (app: Router) => {
       { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
+      publishToQueue(config.queues.track.upload, JSON.stringify({userId, trackObjects, trackFiles: files['tracks'], imageFiles: files['images']}))
+      .then(() => {
+        eventDispatcher.dispatch(events.track.upload) // We run the queue's worker 
+        responseHandle(res, 'Tracks are being uploaded')
+      }).catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
       const successMessage = await trackService.uploadTracks(userId, trackObjects.tracks, files['tracks'], files['images'])
       responseHandle(res, successMessage)
     } catch(err) {
@@ -83,12 +91,17 @@ export default (app: Router) => {
   async (req: Request, res: Response) => {
     try {
       if(!req.file) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-      const trackService = Container.get(TrackService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const imageUrl = await trackService.editTrackImage(userId.toString(), mongoose.Types.ObjectId(req.params.id), req.file)
-      responseHandle(res, {imageUrl: imageUrl})
+      publishToQueue(config.queues.track.editCover, JSON.stringify({userId, trackId: req.params.id, imageFile: req.file}))
+      .then(() => {
+        eventDispatcher.dispatch(events.track.editCover)
+        responseHandle(res, 'Editing track cover')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err) {
       errorHandle(res, err.msg, err.code)
     }
@@ -127,8 +140,14 @@ export default (app: Router) => {
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await trackService.deleteTrack(userId, req.params.id)
-      responseHandle(res, responseData)
+      publishToQueue(config.queues.track.delete, JSON.stringify({userId, trackId: req.params.id}))
+      .then(() => {
+        eventDispatcher.dispatch(events.track.delete)
+        responseHandle(res, 'Deleting track')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
