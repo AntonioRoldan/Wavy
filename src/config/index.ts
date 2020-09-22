@@ -41,7 +41,41 @@ const config = {
   password: process.env.WAVY_PASS,
 
   api: {
-    prefix: '/api'
+    prefix: '/api',
+    album: {
+      root: '/albums',
+      upload: '/upload',
+      search: '/search', // /search?term=value
+      addNewTracks: '/add_new_tracks', // parameters: /:albumId
+      show: '/show', // paramters: /:id
+      editName: '/edit_name', // parameters: /:id/:name
+      editCover: '/edit_cover', // parameters: /:albumId
+      delete: '/delete', // parameters: /:id
+      deleteTrack: '/delete_track', // parameters: /:trackId
+      addExistingSong: '/add_existing_song' // /:albumId/:songId
+    },
+    beat: {
+      root: '/beats',
+      upload: '/upload',
+      search: '/search', // /search?term=value
+      addNewTracks: '/add_new_tracks', // parameters: /:beatId
+      show: '/show', // paramters: /:id
+      editName: '/edit_name', // parameters: /:id/:name
+      editCover: '/edit_cover', // parameters: /:beatId
+      delete: '/delete', // parameters: /:id
+      deleteTrack: '/delete_track' // parameters: /:trackId
+    },
+    track: {
+      root: '/tracks',
+      upload: '/upload',
+      editCover: '/edit_cover', // parameters: /:id
+      editName: '/edit_name', // parameters: /:trackId/:name
+      search: '/search', // /search?term=value
+      delete: '/delete' // parameters: /:id
+    },
+    payment: {
+      root: '/payments'
+    }
   },
 
   amqpURL: process.env.AMQP_URL,

@@ -83,7 +83,7 @@ export default (app: Router) => {
     }
   })
   // Edit track image 
-  route.put('/edit_image/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
+  route.put('/edit_cover/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
   async (req: Request, res: Response) => {
     try {
       if(!req.file) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
@@ -103,13 +103,13 @@ export default (app: Router) => {
     }
   })
 
-  route.put('/edit_name/:track_id/:name', async (req: Request, res: Response) => {
+  route.put('/edit_name/:trackId/:name', async (req: Request, res: Response) => {
     try {
       const trackService = Container.get(TrackService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await trackService.editTrackName(userId, req.params.track_id, req.params.name)
+      const responseData = await trackService.editTrackName(userId, req.params.trackId, req.params.name)
       responseHandle(res, responseData)
     } catch(err){
       errorHandle(res, err.msg, err.code)

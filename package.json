@@ -4,6 +4,12 @@
   "description": "",
   "author": "Antonio",
   "license": "",
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
   "scripts": {
     "start": "npm run serve",
     "build": "npm run build-ts && npm run lint",
@@ -26,6 +32,7 @@
   },
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/jest": "^26.0.14",
     "@types/mongodb": "^3.5.20",
     "@types/multer": "^1.4.3",
     "@types/nodemailer-smtp-transport": "^2.7.4",
