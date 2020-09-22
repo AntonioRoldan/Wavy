@@ -61,6 +61,7 @@ const config = {
     },
     beat: {
       upload: 'upload-beat',
+      addNewTracks: 'add-new-tracks-to-beat',
       editCover: 'edit-beat-cover',
       delete: 'delete-beat',
       deleteTrack: 'delete-beat-track'

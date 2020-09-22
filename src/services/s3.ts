@@ -217,7 +217,6 @@ export default class S3Service {
       Returns an array of s3 urls 
     */
     return new Promise(async (resolve, reject) => {
-      var trackUrls: string[] = [] // We return this array of s3 urls
       if(!trackFiles.length) {
         reject({code: 400, msg: 'No files uploaded'})
       } 

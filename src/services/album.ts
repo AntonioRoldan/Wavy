@@ -7,7 +7,6 @@ import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import mongoose from 'mongoose'
 import TrackService from './track'
-import { EventDispatcher } from 'event-dispatch'
 import { ObjectId } from 'bson'
 
 @Service()

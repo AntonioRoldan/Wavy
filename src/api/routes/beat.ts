@@ -15,9 +15,9 @@ import multer from 'multer'
 import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import BeatService from '../../services/beat'
-import TrackService from '../../services/track'
 import { publishToQueue } from '../../services/mq'
 import events from '../../subscribers/events'
+import config from '../../config'
 import { EventDispatcher } from 'event-dispatch'
 import { Container } from 'typedi'
 const isAuth = require('../middleware/isAuth')
@@ -85,15 +85,20 @@ export default (app: Router) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] }
       if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-      const beatService = Container.get(BeatService)
       const authServiceInstance = Container.get(AuthService)
-      const albumObject = JSON.parse(req.body.album)
-      if(files['tracks'].length != albumObject.tracks.length) 
+      const beatObject = JSON.parse(req.body.album)
+      if(files['tracks'].length != beatObject.tracks.length) 
       { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await beatService.uploadBeat(userId, albumObject, files['tracks'], files['cover'][0])
-      responseHandle(res, successMessage)
+      publishToQueue(config.queues.beat.upload, JSON.stringify({userId, beatObject, trackFiles: files['tracks'], coverFile: files['cover'][0]}))
+      .then(() => {
+        eventDispatcher.dispatch(events.beat.upload) // We run the queue's worker 
+        responseHandle(res, 'Beat is uploading')
+      }).catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
+      responseHandle(res, 'Beat is uploading')
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
@@ -111,7 +116,7 @@ export default (app: Router) => {
     }
   })
 
-  route.post('/add_new_tracks/:id', tracksToExistingBeatUpload, async (req: Request, res: Response) => {
+  route.post('/add_new_tracks/:beatId', tracksToExistingBeatUpload, async (req: Request, res: Response) => {
     /* 
     req.body.tracks = {"tracks": [{
     "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": false
@@ -122,13 +127,18 @@ export default (app: Router) => {
     try {
       const files = req.files as Express.Multer.File[]
       if(files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-      const beatService = Container.get(BeatService)
       const authServiceInstance = Container.get(AuthService)
       const trackObjects = JSON.parse(req.body.tracks)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const successMessage = await beatService.addTracksToExistingBeat(userId, mongoose.Types.ObjectId(req.params.id), trackObjects, files)
-      responseHandle(res, successMessage)
+      publishToQueue(config.queues.beat.addNewTracks, JSON.stringify({userId, beatId: req.params.beatId, trackObjects, trackFiles: files}))
+      .then(() => {
+        eventDispatcher.dispatch(events.beat.addNewTracks) // We run the queue's worker 
+        responseHandle(res, 'New tracks being added to beat')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
@@ -162,16 +172,21 @@ export default (app: Router) => {
     }
   })
 
-  route.put('/edit_cover/:id', async (req: Request, res: Response) => {
+  route.put('/edit_cover/:beatId', async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
      try {
       const beatId = req.params.id 
-      const beatServiceInstance = Container.get(BeatService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await beatServiceInstance.editBeatCover(userId, new mongoose.Types.ObjectId(beatId), req.file)
-      responseHandle(res, responseData)
+      publishToQueue(config.queues.beat.editCover, JSON.stringify({userId, beatId, coverFile: req.file}))
+      .then(() => {
+        eventDispatcher.dispatch(events.beat.editCover)
+        responseHandle(res, 'Editing beat cover')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err) {
       errorHandle(res, err.msg, err.code)
     }
@@ -182,26 +197,41 @@ export default (app: Router) => {
     // Delete album 
      try {
       const beatId = req.params.id
-      const beatServiceInstance = Container.get(BeatService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await beatServiceInstance.deleteBeat(userId, beatId)
-      responseHandle(res, responseData)
+      publishToQueue(config.queues.beat.delete, JSON.stringify({userId, beatId}))
+      .then(() => {
+        eventDispatcher.dispatch(events.beat.delete)
+        responseHandle(res, 'Beat being deleted')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err) { 
       errorHandle(res, err.msg, err.code)
     }
   })
 
-  route.delete('/delete_track/:trackId', (req: Request, res: Response) => {
+  route.delete('/delete_track/:trackId', async (req: Request, res: Response) => {
     /* TODO: write this with user security check 
 
     */
-    try {
-      
+   try {
+      const trackId = req.params.trackId
+      const authServiceInstance = Container.get(AuthService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      publishToQueue(config.queues.beat.deleteTrack, JSON.stringify({userId, trackId}))
+      .then(() => {
+        eventDispatcher.dispatch(events.beat.deleteTrack)
+        responseHandle(res, 'Deleting track from beat')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err) {
-      
+      errorHandle(res, err.msg, err.code)
     }
   })
-
 }

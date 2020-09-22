@@ -12,10 +12,8 @@ regex for password longer than 6 characters containing at least one weird charac
 */
 
 import multer from 'multer'
-import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import AlbumService from '../../services/album'
-import TrackService from '../../services/track'
 import { Container } from 'typedi'
 import { publishToQueue } from '../../services/mq'
 import events from '../../subscribers/events'
@@ -121,11 +119,16 @@ export default (app: Router) => {
       const trackObjects = JSON.parse(req.body.tracks)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      await publishToQueue(config.queues.album.addNewTracks, JSON.stringify({userId, albumId: req.params.albumId, trackObjects, trackFiles: files}))
-      eventDispatcher.dispatch(events.album.addNewTracks)
-      responseHandle(res, `Uploading new tracks to ${req.params.albumId}`)
+      publishToQueue(config.queues.album.addNewTracks, JSON.stringify({userId, albumId: req.params.albumId, trackObjects, trackFiles: files}))
+      .then(() => {
+        eventDispatcher.dispatch(events.album.addNewTracks) // We run the queue's worker 
+        responseHandle(res, 'New tracks being added to album')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err){
-      errorHandle(res, err.msg, err.code)
+      errorHandle(res, err.msg || err.message, err.code)
     }
   })
 
@@ -137,7 +140,7 @@ export default (app: Router) => {
       const albumData = await albumServiceInstance.getAlbumTracks(albumId)
       responseHandle(res, albumData)
     } catch(err) {
-      errorHandle(res, err.msg, err.code)
+      errorHandle(res, err.msg || err.message, err.code)
     }
   })
 
@@ -154,7 +157,7 @@ export default (app: Router) => {
       const responseData = await albumServiceInstance.editAlbumName(userId, albumId, albumName)
       responseHandle(res, responseData)
     } catch(err) {
-      errorHandle(res, err.msg, err.code)
+      errorHandle(res, err.msg || err.message, err.code)
     }
   })
 
@@ -166,23 +169,27 @@ export default (app: Router) => {
       const responseData = await albumServiceInstance.searchAlbum(searchTerm)
       responseHandle(res, responseData)
     } catch(err) {
-      errorHandle(res, err.msg, err.code)
+      errorHandle(res, err.msg || err.message, err.code)
     }
   })
 
-  route.put('/edit_cover/:id', editCoverUpload, async (req: Request, res: Response) => {
+  route.put('/edit_cover/:albumId', editCoverUpload, async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
      try {
-      const albumId = req.params.id 
-      const albumServiceInstance = Container.get(AlbumService)
+      const albumId = req.params.albumId 
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      await publishToQueue(config.queues.album.editCover, JSON.stringify({userId, albumId, coverFile: req.file}))
-      eventDispatcher.dispatch(events.album.editCover)
-      responseHandle(res, 'Uploading new image file')
+      publishToQueue(config.queues.album.editCover, JSON.stringify({userId, albumId, coverFile: req.file}))
+      .then(() => {
+        eventDispatcher.dispatch(events.album.editCover)
+        responseHandle(res, 'Editing album cover')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err) {
-      errorHandle(res, err.msg, err.code)
+      errorHandle(res, err.msg || err.message, err.code)
     }
   })
 
@@ -194,32 +201,39 @@ export default (app: Router) => {
    
    try {
     const albumId = req.params.id 
-    const albumServiceInstance = Container.get(AlbumService)
     const authServiceInstance = Container.get(AuthService)
     const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
     const userId = await authServiceInstance.getUserId(token)
-    await publishToQueue(config.queues.album.delete, JSON.stringify({userId, albumId}))
-    eventDispatcher.dispatch(events.album.delete)
-    responseHandle(res, 'Album being deleted')
+    publishToQueue(config.queues.album.delete, JSON.stringify({userId, albumId}))
+    .then(() => {
+      eventDispatcher.dispatch(events.album.delete)
+      responseHandle(res, 'Album being deleted')
+    })
+    .catch((err) => {
+      errorHandle(res, err.msg || err.message, err.code)
+    })
    } catch(err){
     errorHandle(res, err.msg, err.code)
    }
   })
 
-  route.delete('/delete_track/:id', async (req: Request, res: Response) => {
+  route.delete('/delete_track/:trackId', async (req: Request, res: Response) => {
     /* Delete a song from an album 
     TODO: USER SECURITY CHECK
     */
     try {
       const trackId = req.params.id
-      const trackServiceInstance = Container.get(TrackService)
       const authServiceInstance = Container.get(AuthService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
-      const responseData = await trackServiceInstance.deleteTrack(userId, trackId)
       publishToQueue(config.queues.album.deleteTrack, JSON.stringify({userId, trackId}))
-      eventDispatcher.dispatch(events.album.deleteTrack)
-      responseHandle(res, responseData)
+      .then(() => {
+        eventDispatcher.dispatch(events.album.deleteTrack)
+        responseHandle(res, 'Deleting track from album')
+      })
+      .catch((err) => {
+        errorHandle(res, err.msg || err.message, err.code)
+      })
     } catch(err) {
       errorHandle(res, err.msg, err.code)
     }

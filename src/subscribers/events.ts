@@ -17,7 +17,8 @@ export default {
   },
   beat: {
     upload: 'onBeatUpload',
-    editCover: 'onBeatEditCover',
+    addNewTracks: 'onAddNewTracksToBeat',
+    editCover: 'onEditBeatCover',
     deleteTrack: 'onDeleteBeatTrack',
     delete: 'onDeleteBeat'
   }

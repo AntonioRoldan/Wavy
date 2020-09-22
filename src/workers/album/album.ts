@@ -80,7 +80,7 @@ export const runDeleteAlbumConsumer = async () => {
   })
 }
 
-export const runDeleteAlbumTrackConsumer = async () => {
+export const runDeleteTrackConsumer = async () => {
   return new Promise( async (resolve, reject) => {
     try { 
       await consumeFromQueue(config.queues.album.deleteTrack, async (msg: any, ch: any) => {

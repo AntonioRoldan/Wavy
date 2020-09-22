@@ -5,7 +5,7 @@
 
 import events from './events'
 import { EventSubscriber, On } from 'event-dispatch'
-import { runUploadConsumer, runAddNewTracksConsumer, runDeleteAlbumConsumer, runEditCoverConsumer, runDeleteAlbumTrackConsumer } from '../workers/album'
+import { runUploadConsumer, runAddNewTracksConsumer, runDeleteAlbumConsumer, runEditCoverConsumer, runDeleteTrackConsumer } from '../workers/album'
 @EventSubscriber()
 export default class AlbumSubscriber {
 
@@ -52,7 +52,7 @@ export default class AlbumSubscriber {
   @On(events.album.deleteTrack)
   public async onDeleteAlbumTrack() {
     try { 
-      const successMessage = await runDeleteAlbumTrackConsumer()
+      const successMessage = await runDeleteTrackConsumer()
       console.log(successMessage)
     } catch (err) {
       throw new Error(err)
