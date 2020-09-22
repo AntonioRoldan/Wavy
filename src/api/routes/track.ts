@@ -5,7 +5,6 @@
 */
 
 import multer from 'multer'
-import mongoose from 'mongoose'
 import AuthService from '../../services/authentication/auth'
 import TrackService from '../../services/track'
 import { Container } from 'typedi'
@@ -65,7 +64,6 @@ export default (app: Router) => {
     */
     try {
       if(!req.files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
-      const trackService = Container.get(TrackService)
       const authServiceInstance = Container.get(AuthService)
       const trackObjects = JSON.parse(req.body.tracks)
       const files = req.files as { [fieldname: string]: Express.Multer.File[] }
@@ -80,8 +78,6 @@ export default (app: Router) => {
       }).catch((err) => {
         errorHandle(res, err.msg || err.message, err.code)
       })
-      const successMessage = await trackService.uploadTracks(userId, trackObjects.tracks, files['tracks'], files['images'])
-      responseHandle(res, successMessage)
     } catch(err) {
       errorHandle(res, err.message, err.code)
     }
@@ -135,7 +131,6 @@ export default (app: Router) => {
 
   route.delete('/delete/:id', async (req: Request, res: Response) => {
     // Delete a single track 
-    const trackService = Container.get(TrackService)
     const authServiceInstance = Container.get(AuthService)
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string

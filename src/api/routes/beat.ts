@@ -98,7 +98,6 @@ export default (app: Router) => {
       }).catch((err) => {
         errorHandle(res, err.msg || err.message, err.code)
       })
-      responseHandle(res, 'Beat is uploading')
     } catch(err){
       errorHandle(res, err.msg, err.code)
     }
