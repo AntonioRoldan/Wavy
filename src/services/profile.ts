@@ -88,11 +88,12 @@ export default class UserService {
   public showUserInfo(userId: string, loggedInUserId: string) {
     /*
     Returns 
-    {avatar: "", username: "", email: "", id: "", followerCount: 0, albumsCount: 0, beatsCount: 0, tracksCount: 0, 
+    {avatar: "", username: "", email: "", id: "", followeeCount: 0, followerCount: 0, albumsCount: 0, beatsCount: 0, tracksCount: 0, 
     tracks: [{title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl, type: track.type, canEdit: userId === loggedInUserId}],
     beats: [{ id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username,  subDiscount: subDiscount, normalDiscount: normalDiscount, canEdit: userId === loggedInUserId}], 
     albums: [{ id: album._id,  cover: album.coverUrl, title: album.title, author: author.username, canEdit: userId === loggedInUserId}], 
     followers: [array of id's ]
+    followees: [array of id's]
     }
     */
     return new Promise( async (resolve, reject) => {
@@ -104,6 +105,8 @@ export default class UserService {
         const tracks = await this.trackService.getUserTracks(userId, loggedInUserId)
         userInfo.avatar = user.avatarURL
         userInfo.followerCount = user.followers.length
+        userInfo.followeeCount = user.follows.length
+        userInfo.followees = user.follows
         userInfo.followers = user.followers
         userInfo.username = user.username
         userInfo.email = user.email
