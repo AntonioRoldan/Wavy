@@ -43,9 +43,9 @@ export default (app: Router) => {
       } 
       req.file 
     */
-    const authServiceInstance = Container.get(AuthService)
-    const profileServiceInstance = Container.get(UserService)
     try {
+      const authServiceInstance = Container.get(AuthService)
+      const profileServiceInstance = Container.get(UserService)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const options = JSON.parse(req.body.options)
       const userId = await authServiceInstance.getUserId(token) // We pass this token parameter in our isAuth middleware
@@ -57,5 +57,16 @@ export default (app: Router) => {
       errorHandle(res, err.msg, err.code)
     }
   })
-
+  route.get('/show_user_info/:userId', async (req: Request, res: Response) => {
+    try {
+      const authServiceInstance = Container.get(AuthService)
+      const profileServiceInstance = Container.get(UserService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token) // We pass this token parameter in our isAuth middleware
+      const userInfo = await profileServiceInstance.showUserInfo(req.params.userId, userId) // We pass profile id and logged in user id 
+      responseHandle(res, userInfo)
+    } catch(err){
+      errorHandle(res, err.msg, err.code)
+    }
+  })
 }
