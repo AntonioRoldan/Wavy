@@ -5,12 +5,12 @@ request = request('http://localhost:8000/')
 /// ///////// Album routes //////////
 
 describe('Beat routes', () => {
-  it('should upload an album', async () => {
+  it('should upload a beat package', async () => {
     try {
       // First we fill an array with the audio files
       // And we get the cover file
       const requestInstance = request.post(config.api.beat.root + config.api.beat.upload)
-      requestInstance.field('ablum', 'JSONString for album object')
+      requestInstance.field('ablum', 'JSONString for beat object')
       // .attach('arrayname', file)
       // .attach('cover', cover file))
       const res = await requestInstance

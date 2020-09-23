@@ -74,7 +74,7 @@ export default (app: Router) => {
 
   route.post('/upload', beatUpload, async (req: Request, res: Response) => {
     /* 
-    req.body.album : {title: '', tracks: [{
+    req.body.beat : {title: '', tracks: [{
       "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": 
     }]}
     req.files : {cover: [], tracks: []}
@@ -144,7 +144,11 @@ export default (app: Router) => {
   })
 
   route.get('/show/:id', async (req: Request, res: Response) => {
-   
+   /* 
+   Response 
+   {tracks: [{title: track.title, audio: track.trackUrl}],
+    beat: {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl, id: beatDocument._id}}
+   */
     try {
       const beatId = req.params.id 
       const beatServiceInstance = Container.get(BeatService)

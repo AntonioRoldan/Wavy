@@ -7,6 +7,7 @@
 import { Container } from 'typedi'
 import { Request, Response, Router } from 'express'
 import PaymentService from '../../services/payment'
+import AuthService from '../../services/authentication/auth'
 
 export const route = Router()
 
@@ -28,16 +29,70 @@ export default (app: Router) => {
 
   })
 
-  route.get('/show_shopping_cart', (req: Request, res: Response) => {
-
+  route.get('/show_shopping_cart', async (req: Request, res: Response) => {
+    try {
+      const authServiceInstance = Container.get(AuthService)
+      const paymentServiceInstance = Container.get(PaymentService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await paymentServiceInstance.showShoppingCart(userId)
+      responseHandle(res, responseData)
+    } catch (err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.post('/add_to_shopping_cart', (req: Request, res: Response) => {
-
+  route.post('/add_to_shopping_cart/:itemId', async (req: Request, res: Response) => {
+    /* 
+    Response 
+    [{
+      id: item.id,
+      title: itemDoc.title, 
+      price: userIsSubscribedToAuthor ? Number(itemDoc.subscriptionDiscount) * Number(itemDoc.price) : itemDoc.setDiscount ? Number(itemDoc.discount) * Number(itemDoc.price) : Number(itemDoc.price), 
+    }]
+    */
+    try {
+      const authServiceInstance = Container.get(AuthService)
+      const paymentServiceInstance = Container.get(PaymentService)
+      const itemId = req.params.itemId
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await paymentServiceInstance.addToShoppingCart(userId, itemId)
+      responseHandle(res, responseData)
+    } catch (err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
-  route.get('/clear_shopping_cart', (req: Request, res: Response) => {
-    
+  route.get('/clear_shopping_cart', async (req: Request, res: Response) => {
+    /* 
+    Response: []
+    */
+    try {
+      const authServiceInstance = Container.get(AuthService)
+      const paymentServiceInstance = Container.get(PaymentService)
+      const itemId = req.params.itemId
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await paymentServiceInstance.clearShoppingCart(userId)
+      responseHandle(res, responseData)
+    } catch (err){
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
+  route.delete('/delete_item_from_cart/:itemId', async (req: Request, res: Response) =>{
+    try {
+      const authServiceInstance = Container.get(AuthService)
+      const paymentServiceInstance = Container.get(PaymentService)
+      const itemId = req.params.itemId
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await paymentServiceInstance.removeFromShoppingCart(userId, itemId)
+      responseHandle(res, responseData)
+    } catch (err){
+      errorHandle(res, err.msg, err.code)
+    }
   })
 
   route.post('/buy_shopping_cart_items', (req: Request, res: Response) => {

@@ -133,7 +133,12 @@ export default (app: Router) => {
   })
 
   route.get('/show/:id', async (req: Request, res: Response) => {
-    
+    /* 
+      response 
+      {tracks: [{title: track.title, audio: track.trackUrl, isPremium: track.isPremium}], 
+      album: {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl} 
+      } 
+    */
     try {
       const albumId = req.params.id
       const albumServiceInstance = Container.get(AlbumService)

@@ -9,7 +9,7 @@ unfollow users, follow them and exchange messages
 */ 
 import multer from 'multer'
 import AuthService from '../../services/authentication/auth'
-import ProfileService from '../../services/profile'
+import ProfileService from '../../services/profileconfig'
 import { Container } from 'typedi'
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'

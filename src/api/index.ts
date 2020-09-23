@@ -12,6 +12,7 @@ import albums from './routes/album'
 import tracks from './routes/track'
 import beats from './routes/beat'
 import playlist from './routes/playlist'
+import payment from './routes/payment'
 export default () => {
   const app = Router()
   auth(app)
@@ -21,5 +22,6 @@ export default () => {
   tracks(app)
   beats(app)
   playlist(app)
+  payment(app)
   return app
 }

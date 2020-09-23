@@ -163,6 +163,7 @@ export default class BeatService {
         const beatTracks = await this.trackModel.find({beat: beatDocument._id})
         const subDiscount = beatDocument.subscriptionDiscount && userIsSubscribedToAuthor ? true : false
         userIsSubscribedToAuthor = user.subscriptions.includes(author._id) ? true : false // TODO: Test this 
+        beatData.id = beatData._id
         beatData.title = beatDocument.title
         beatData.author = beatDocument.authorName
         beatData.price = beatDocument.subscriptionDiscount && userIsSubscribedToAuthor ? Number(beatDocument.subscriptionDiscount) * Number(beatDocument.price) : beatDocument.setDiscount ? Number(beatDocument.price) * Number(beatDocument.discount) : Number(beatDocument.price)
@@ -186,7 +187,7 @@ export default class BeatService {
         beatData.tracks = beatTracks.map(track => {
           return {title: track.title, audio: track.trackUrl}
         })
-        beatData.beat = {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl}
+        beatData.beat = {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl, id: beatDocument._id}
         resolve(beatData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})
