@@ -30,6 +30,14 @@ export default (app: Router) => {
   })
 
   route.get('/show_shopping_cart', async (req: Request, res: Response) => {
+    /*
+      Response 
+    [{
+      id: item.id,
+      title: itemDoc.title, 
+      price: userIsSubscribedToAuthor ? Number(itemDoc.subscriptionDiscount) * Number(itemDoc.price) : itemDoc.setDiscount ? Number(itemDoc.discount) * Number(itemDoc.price) : Number(itemDoc.price), 
+    }]
+    */
     try {
       const authServiceInstance = Container.get(AuthService)
       const paymentServiceInstance = Container.get(PaymentService)
@@ -82,6 +90,14 @@ export default (app: Router) => {
   })
 
   route.delete('/delete_item_from_cart/:itemId', async (req: Request, res: Response) =>{
+    /* 
+    Response 
+    [{
+      id: item.id,
+      title: itemDoc.title, 
+      price: userIsSubscribedToAuthor ? Number(itemDoc.subscriptionDiscount) * Number(itemDoc.price) : itemDoc.setDiscount ? Number(itemDoc.discount) * Number(itemDoc.price) : Number(itemDoc.price), 
+    }]
+    */
     try {
       const authServiceInstance = Container.get(AuthService)
       const paymentServiceInstance = Container.get(PaymentService)
@@ -96,7 +112,7 @@ export default (app: Router) => {
   })
 
   route.post('/buy_shopping_cart_items', (req: Request, res: Response) => {
-
+    // TODO: Write this with stipe 
   })
 
 }
