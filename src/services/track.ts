@@ -77,7 +77,7 @@ export default class TrackService {
 
   // MARK: Read 
 
-  public getUserTracks(userId: string): Promise<any> {
+  public getUserTracks(userId: string, loggedInUserId: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
         let userTracks =[] 
@@ -85,7 +85,7 @@ export default class TrackService {
         userTracks = userTracksDocuments.filter(track => {
           return track.type != 'drumkit' && track.type != 'loop'
         }).map(track => {
-          return {title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl, type: track.type}
+          return {title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl, type: track.type, canEdit: userId === loggedInUserId}
         }) 
         resolve(userTracks)
       } catch(err){

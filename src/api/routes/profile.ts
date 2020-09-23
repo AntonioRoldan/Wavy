@@ -9,7 +9,7 @@ unfollow users, follow them and exchange messages
 */ 
 import multer from 'multer'
 import AuthService from '../../services/authentication/auth'
-import ProfileService from '../../services/profileconfig'
+import UserService from '../../services/profile'
 import { Container } from 'typedi'
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'
@@ -44,7 +44,7 @@ export default (app: Router) => {
       req.file 
     */
     const authServiceInstance = Container.get(AuthService)
-    const profileServiceInstance = Container.get(ProfileService)
+    const profileServiceInstance = Container.get(UserService)
     try {
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const options = JSON.parse(req.body.options)

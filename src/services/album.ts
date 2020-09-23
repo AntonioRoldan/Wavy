@@ -109,7 +109,7 @@ export default class AlbumService {
         const searchMatchingAlbumsDocuments = await this.albumModel.find({title: new RegExp(search, 'i')})
         matchingSearchAlbums = searchMatchingAlbumsDocuments.map(async album => {
           const author = await this.userModel.findById(album.authorId)
-          return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username}
+          return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username, authorId: author._id}
         })
         console.log('matchingSearchAlbums :', matchingSearchAlbums)
         resolve(matchingSearchAlbums)
@@ -127,7 +127,7 @@ export default class AlbumService {
         const author = await this.userModel.findById(userId)
         const albumsDocuments = await this.albumModel.find({authorId: userId})
         userAlbums = albumsDocuments.map(album => {
-          return { id: album._id,  cover: album.coverUrl, title: album.title, author: author.username, canEdit: userId === loggedInUserId ? true : false}
+          return { id: album._id,  cover: album.coverUrl, title: album.title, author: author.username, canEdit: userId === loggedInUserId}
         })
         resolve(userAlbums)
       }catch(err){

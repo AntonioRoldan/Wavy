@@ -121,7 +121,7 @@ export default class BeatService {
         const searchMatchingBeatsDocuments = await this.beatModel.find({title: new RegExp(search, 'i')})
         matchingSearchBeats = searchMatchingBeatsDocuments.map(async beat => {
           const author = await this.userModel.findById(beat.authorId)
-          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username}
+          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username,  authorId: author._id}
         })
         console.log('matchingSearchAlbums :', matchingSearchBeats)
         resolve(matchingSearchBeats)
@@ -143,7 +143,7 @@ export default class BeatService {
         userBeats = beatsDocuments.map(beat => {
           const subDiscount = beat.subscriptionDiscount && userIsSubscribedToAuthor ? true : false
           const normalDiscount = beat.setDiscount 
-          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username,  subDiscount: subDiscount, normalDiscount: normalDiscount, canEdit: userId === loggedInUserId ? true : false}
+          return { id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username,  subDiscount: subDiscount, normalDiscount: normalDiscount, canEdit: userId === loggedInUserId}
         })
         resolve(userBeats)
       }catch(err){
