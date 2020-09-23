@@ -89,10 +89,10 @@ export default class UserService {
     /*
     Returns 
     {avatar: "", username: "", email: "", id: "", followerCount: 0, albumsCount: 0, beatsCount: 0, tracksCount: 0, 
-    tracks: [{}],
-    beats: [{}], 
-    albums: [{}], 
-    followers: [{}]
+    tracks: [{title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl, type: track.type, canEdit: userId === loggedInUserId}],
+    beats: [{ id: beat._id,  undercover: beat.coverUrl, title: beat.title, author: author.username,  subDiscount: subDiscount, normalDiscount: normalDiscount, canEdit: userId === loggedInUserId}], 
+    albums: [{ id: album._id,  cover: album.coverUrl, title: album.title, author: author.username, canEdit: userId === loggedInUserId}], 
+    followers: [array of id's ]
     }
     */
     return new Promise( async (resolve, reject) => {
