@@ -142,7 +142,7 @@ export default class AlbumService {
   // }
 
   public getAlbumTracks(albumId: string): Promise<any> {
-        //TODO: Test this 
+        //TODO: Test this and write can edit 
     return new Promise(async (resolve, reject) => {
       try{
         let albumData: any = {} // {album: {title: , author:, cover: , id: }, tracks: [{title: , audio: , isPremium:, id:}]}
@@ -153,7 +153,7 @@ export default class AlbumService {
         albumData.tracks = albumTracks.map(track => {
           return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium, id: track._id}
         })
-        albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl, id: albumDocument._id}
+        albumData.album = {title: albumDocument.title, authorId: author._id, author: author.username, cover: albumDocument.coverUrl, id: albumDocument._id}
         resolve(albumData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})

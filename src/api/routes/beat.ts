@@ -74,8 +74,8 @@ export default (app: Router) => {
 
   route.post('/upload', beatUpload, async (req: Request, res: Response) => {
     /* 
-    req.body.beat : {title: '', tracks: [{
-      "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": 
+    req.body.beat = {title: '', price: 0, tracks: [{
+      "title": , "inspiredArtists": ["", ""], "genres": [],
     }]}
     req.files : {cover: [], tracks: []}
     */ 
@@ -86,7 +86,7 @@ export default (app: Router) => {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] }
       if(!files) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)
       const authServiceInstance = Container.get(AuthService)
-      const beatObject = JSON.parse(req.body.album)
+      const beatObject = JSON.parse(req.body.beat)
       if(files['tracks'].length != beatObject.tracks.length) 
       { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
@@ -147,7 +147,7 @@ export default (app: Router) => {
    /* 
    Response 
    {tracks: [{title: track.title, audio: track.trackUrl}],
-    beat: {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl, id: beatDocument._id}}
+    beat: {title: beatDocument.title, authorId: author._id, author: author.username, cover: beatDocument.coverUrl, id: beatDocument._id}}
    */
     try {
       const beatId = req.params.id 

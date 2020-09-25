@@ -37,10 +37,10 @@ const beatSchema = new Schema({
   },
   discount: {
     type: Number,
-    default: 0.0
+    default: 0.0 // A value between 0.0 and 1.0
   },
   price: {
-    type: Number,
+    type: Number, // We will store whole numbers and divide them by 100 to get the decimals when displaying price
     default: 0
   },
   inspiredArtists: [{

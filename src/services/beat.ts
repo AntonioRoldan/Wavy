@@ -81,12 +81,13 @@ export default class BeatService {
           author: beatAuthor,
           coverUrl: coverUrl,
           genres: beatObject.genres,
-          price: beatModel.price,
-          discount: beatModel.discount
+          price: beatObject.price
+          // price: beatModel.price,
+          // discount: beatModel.discount
         })
         const trackUrls = await this.s3Service.uploadTracks(userId.toString(), trackFiles, undefined, beatModel._id.toString())
         tracksObjects.forEach(async (track: any, index: any) => {
-          if(track.type !== 'drumkit' || track.type !== 'loop') {
+          if(track.type !== 'drumkit' && track.type !== 'loop') {
             reject({code: 400, msg: 'The type specified for track belonging to a beat has to be drumkit or loop'})
           }
           const trackCreated = await this.trackModel.create({
@@ -187,7 +188,7 @@ export default class BeatService {
         beatData.tracks = beatTracks.map(track => {
           return {title: track.title, audio: track.trackUrl}
         })
-        beatData.beat = {title: beatDocument.title, author: author.username, cover: beatDocument.coverUrl, id: beatDocument._id}
+        beatData.beat = {title: beatDocument.title, authorId: author._id, author: author.username, cover: beatDocument.coverUrl, id: beatDocument._id}
         resolve(beatData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})

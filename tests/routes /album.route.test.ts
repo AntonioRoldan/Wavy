@@ -4,6 +4,7 @@ var request = require('supertest')
 request = request('http://localhost:8000/')
 var path = require('path')
 
+// To run tests individually type the following command jest -t '<describeString> <itString>'
 /// ///////// Album routes //////////
 const times = x => f => {
   if (x > 0) {
