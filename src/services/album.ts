@@ -8,6 +8,7 @@ import S3Service from './s3'
 import mongoose from 'mongoose'
 import TrackService from './track'
 import { ObjectId } from 'bson'
+import album from '../api/routes/album';
 
 @Service()
 export default class AlbumService {
@@ -144,15 +145,15 @@ export default class AlbumService {
         //TODO: Test this 
     return new Promise(async (resolve, reject) => {
       try{
-        let albumData: any = {} // {album: {title: , author:, cover: }, tracks: [{title: , audio: }]}
+        let albumData: any = {} // {album: {title: , author:, cover: , id: }, tracks: [{title: , audio: , isPremium:, id:}]}
         const albumDocument = await this.albumModel.findById(albumId)
         console.log('albumDocument :', albumDocument)
         const author = await this.userModel.findById(albumDocument.authorId)
         const albumTracks = await this.trackModel.find({album: albumDocument._id})
         albumData.tracks = albumTracks.map(track => {
-          return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium}
+          return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium, id: track._id}
         })
-        albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl}
+        albumData.album = {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl, id: albumDocument._id}
         resolve(albumData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})

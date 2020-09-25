@@ -135,8 +135,8 @@ export default (app: Router) => {
   route.get('/show/:id', async (req: Request, res: Response) => {
     /* 
       response 
-      {tracks: [{title: track.title, audio: track.trackUrl, isPremium: track.isPremium}], 
-      album: {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl} 
+      {tracks: [{title: track.title, audio: track.trackUrl, isPremium: track.isPremium, id: track._id}], 
+      album: {title: albumDocument.title, author: author.username, cover: albumDocument.coverUrl, id: album._id} 
       } 
     */
     try {
@@ -151,7 +151,7 @@ export default (app: Router) => {
 
   route.put('/edit_name/:id/:name', async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
-    
+    // response: new album name 
     try {
       const albumId = req.params.id 
       const albumName = req.params.name
