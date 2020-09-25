@@ -113,7 +113,7 @@ export default class AlbumService {
           return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username, authorId: author._id}
         })
         console.log('matchingSearchAlbums :', matchingSearchAlbums)
-        resolve(matchingSearchAlbums)
+        resolve({results: matchingSearchAlbums})
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})
       }

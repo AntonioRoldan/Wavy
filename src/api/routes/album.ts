@@ -168,6 +168,7 @@ export default (app: Router) => {
 
   route.get('/search', async (req: Request, res: Response) => {
     // /search?term=value 
+    // Response [{ id: album._id, cover: album.coverUrl, title: album.title, author: author.username, authorId: author._id}]
     try {
       const searchTerm = req.query.term as string
       const albumServiceInstance = Container.get(AlbumService)
