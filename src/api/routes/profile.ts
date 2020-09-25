@@ -17,7 +17,6 @@ import { Request, Response, Router } from 'express'
 
 export const route = Router()
 
-
 const errorHandle = (res: Response, errorMessage: string, code: number): void => {
   errorMessage = errorMessage || 'Unknown error'
   code = code || 500
