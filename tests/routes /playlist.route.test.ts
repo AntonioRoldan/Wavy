@@ -1,8 +1,6 @@
 import config from '../../src/config'
-import fs from 'fs'
 var request = require('supertest')
 request = request('http://localhost:8000/')
-var path = require('path')
 
 // To run tests individually type the following command jest -t '<describeString> <itString>'
 /// ///////// Playlist routes //////////
@@ -82,7 +80,6 @@ describe('Playlist put routes', async () => {
 })
 
 describe('Playlist get routes', async () => {
-
   it('should show a playlist', async () => {
     try {
       const requestInstance = request.get(config.api.playlist.root + config.api.playlist.show + '/' + playlistId)
@@ -127,7 +124,7 @@ describe('Playlist delete routes', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
-      expect(res.text).toEqual('Song title removed from playlist)
+      expect(res.text).toEqual('Song title removed from playlist')
     } catch (err) {
       console.log('Remove playlist track route error :', err)
     }
