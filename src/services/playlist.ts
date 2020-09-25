@@ -101,7 +101,6 @@ export default class PlaylistService {
   public addAlbumToPlaylist(userId: string, playlistId: string, albumId: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
-        const albumExists = await this.albumModel.findById(albumId)
         let playlist = await this.playlistModel.findById(playlistId)
         const tracksDocuments = await this.trackModel.find({
           album: new mongoose.Types.ObjectId(albumId),
@@ -197,7 +196,7 @@ export default class PlaylistService {
         playlist.name = name
         playlist = await playlist.save()
         console.log('Playlists modified name: ', playlist.name)
-        resolve(`Playlist's name successfully modified`)
+        resolve(playlist.name)
       } catch (err) {
         reject({ code: 500, msg: err.message || err.msg })
       }
@@ -215,6 +214,9 @@ export default class PlaylistService {
         playlist.tracks = playlist.tracks.filter(trackId => {
           return String(trackId) !== songId
         })
+        if(playlist.tracks.length < 4) { // If we have less than four tracks we remove the spotify collage for the playlist image
+          playlist.images = [playlist.images[0]]
+        }
         playlist = await playlist.save()
         console.log('Playlist tracks after removing:', playlist.tracks)
         resolve(`${song.title} removed from playlist`)

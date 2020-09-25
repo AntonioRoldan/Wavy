@@ -77,6 +77,17 @@ const config = {
     },
     payment: {
       root: '/payments'
+    },
+    playlist: {
+      root: '/playlists',
+      create: '/create', // parameters: /:name
+      addAlbum: '/add_album', // parameters: /:paylist_id/:album_id
+      addSong: '/add_song',
+      search: '/search', // parameters: /:search?term=value
+      show: '/show', // parameters: /:id
+      editName: '/edit_name', // parameters /:name/:playlist_id
+      delete: '/delete', // parameters /:id
+      removeSong: '/remove_song' // parameters: /:playlist_id/:song_id
     }
   },
 

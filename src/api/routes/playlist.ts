@@ -91,7 +91,7 @@ export default (app: Router) => {
     }
   })
 
-  route.put('/edit_name/:name/:playlist_id', async (req: Request, res:Response) => {
+  route.put('/edit_name/:playlist_id/:name', async (req: Request, res:Response) => {
   
     try {
       const name = req.params.name

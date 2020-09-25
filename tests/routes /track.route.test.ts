@@ -2,11 +2,13 @@ var request = require('supertest')
 
 request = request('http://localhost:8000/')
 
+let accessToken = '' // We'll have to change this every hour
+let refreshToken = '' // The refresh token lasts for a month
 
 describe('Track post routes', async () => {
   it('should upload a series of single tracks', async () => {
     try {
-
+      
     } catch (err) {
       
     }

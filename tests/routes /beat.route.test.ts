@@ -21,7 +21,9 @@ let twice = times(2)
 // We should have two albums in the database 
 let beatId = '5f57dc34d2c5bdc29ed3d19b' // This beat will always be the same 
 let deleteAlbumId = '' // This will be the beat we upload in the tests which will also be deleted
-let trackId = '' //Id for a track to be deleted 
+let trackId = '' // Id for a track to be deleted
+let accessToken = '' // We'll have to change this every hour
+let refreshToken = '' // The refresh token lasts for a month
 describe('Beat post routes', () => {
   it('should upload an beat', async () => {
     try {
@@ -30,6 +32,8 @@ describe('Beat post routes', () => {
       const audioFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'rememberme.mp3'))
       const coverFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'Airbnbplaya2.jpg'))
       const requestInstance = request.post(config.api.beat.root + config.api.beat.upload)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       requestInstance.field('beat', '{"title": "Sup", "price": 234, "tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}]}')
       fourTimes(() => { requestInstance.attach('tracks', audioFile) })
       requestInstance.attach('cover', coverFile)
@@ -45,6 +49,8 @@ describe('Beat post routes', () => {
     try {
       const audioFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'rememberme.mp3'))
       const requestInstance = request.post(config.api.beat.root + config.api.beat.addNewTracks + '/' + beatId)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       requestInstance.field('tracks', '{"tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}]}')
       twice(() => { requestInstance.attach('files', audioFile) })
       const res = await requestInstance
@@ -61,6 +67,8 @@ describe('Beat put routes', async () => {
       // TODO: We should have a different image file to test the cover changed in S3 
       const coverFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'Airbnbplaya2.jpg'))
       const requestInstance = request.put(config.api.beat.root + config.api.beat.editCover + '/' + beatId)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       requestInstance.attach('file', coverFile)
       const res = await requestInstance
       expect(res.text).toEqual('Editing beat cover')
@@ -72,6 +80,8 @@ describe('Beat put routes', async () => {
     try {
       const requestInstance = request.put(config.api.beat.root + config.api.beat.editName + '/' + beatId + '/' + 'LALALA')
       const res = await requestInstance
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       expect(res.text).toEqual('LALALA')
     } catch (err) {
       console.log('Edit beats name route error :', err)
@@ -80,9 +90,12 @@ describe('Beat put routes', async () => {
 })
 
 describe('Beat get routes', async () => {
+  // TODO: Upload a beat and then show it to see what the response should look like
   it('should show a beat', async () => {
     try {
       const requestInstance = request.get(config.api.beat.root + config.api.beat.show + '/' + beatId)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
     } catch (err) {
       console.log('Show beat route error :', err)
     }
@@ -91,6 +104,8 @@ describe('Beat get routes', async () => {
     try {
       const searchTerm = 'Su'
       const requestInstance = request.get(config.api.beat.root + config.api.beat.search + '/' + searchTerm)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
       // expect(res.body.results[0]).toEqual({ id: beat._id, cover: , title: "Sup", author: author.username, authorId: author._id})
     } catch (err) {
@@ -104,6 +119,8 @@ describe('Beat delete routes', async () => {
     try {
       const requestInstance = request.delete(config.api.beat.root + config.api.beat.delete + '/' + deleteAlbumId)
       const res = await requestInstance
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       expect(res.text).toEqual('Beat being deleted')
     } catch (err) {
       console.log('Delete beat route error :', err)
@@ -113,6 +130,8 @@ describe('Beat delete routes', async () => {
     try {
       const requestInstance = request.delete(config.api.beat.root + config.api.beat.deleteTrack + '/' + trackId)
       const res = await requestInstance
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       expect(res.text).toEqual('Deleting track for beat')
     } catch (err) {
       console.log('Delete beat track route error :', err)
