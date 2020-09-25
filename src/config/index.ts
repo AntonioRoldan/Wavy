@@ -18,6 +18,8 @@ const config = {
 
   validImageExtensions: ['jpeg', 'png'],
 
+  multerDestinationPath: `/Users/${process.env.WHOAMI}/temp`,
+
   s3AccessKeyID: process.env.S3_ACCESS_KEY_ID,
 
   s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY,

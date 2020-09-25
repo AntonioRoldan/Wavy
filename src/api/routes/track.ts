@@ -47,7 +47,7 @@ const tracksFileFilter = (req: Request, file: any, cb: any) => {
 }
 
 export default (app: Router) => {
-  var upload = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: tracksFileFilter})
+  var upload = multer({ dest: config.multerDestinationPath, limits: {fileSize: 5120 * 5120}, fileFilter: tracksFileFilter})
   var tracksUpload: any = upload.fields([{name: 'tracks', maxCount: 10}, {name: 'images', maxCount: 10}])
   route.use(isAuth)
   app.use('/tracks', route)
@@ -83,7 +83,7 @@ export default (app: Router) => {
     }
   })
   // Edit track image 
-  route.put('/edit_cover/:id', multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
+  route.put('/edit_cover/:id', multer({dest: config.multerDestinationPath, limits: { fieldSize: 8 * 1024 * 1024 }}).single('image'), 
   async (req: Request, res: Response) => {
     try {
       if(!req.file) errorHandle(res, 'No files uploaded or invalid file format, check your image or audio file format', 400)

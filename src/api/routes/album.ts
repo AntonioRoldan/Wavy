@@ -63,10 +63,10 @@ const addTracksToExistingAlbumFilter = (req: Request, file: any, cb: any) => {
 }
 
 export default (app: Router) => {
-  var upload = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: tracksFileFilter})
+  var upload = multer({ dest: config.multerDestinationPath, limits: {fileSize: 5120 * 5120}, fileFilter: tracksFileFilter})
   var albumUpload: any = upload.fields([{name: 'tracks', maxCount: 10}, {name: 'cover', maxCount: 1}])
-  var tracksToExistingAlbumUpload: any = multer({ dest: '/temp', limits: {fileSize: 5120 * 5120}, fileFilter: addTracksToExistingAlbumFilter}).array('tracks', 10)
-  var editCoverUpload: any = multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('cover')
+  var tracksToExistingAlbumUpload: any = multer({ dest: config.multerDestinationPath, limits: {fileSize: 5120 * 5120}, fileFilter: addTracksToExistingAlbumFilter}).array('tracks', 10)
+  var editCoverUpload: any = multer({dest: config.multerDestinationPath, limits: { fieldSize: 8 * 1024 * 1024 }}).single('cover')
   route.use(isAuth)
   app.use('/albums', route)
 

@@ -11,10 +11,12 @@ import multer from 'multer'
 import AuthService from '../../services/authentication/auth'
 import UserService from '../../services/profile'
 import { Container } from 'typedi'
+import config from '../../config'
 const isAuth = require('../middleware/isAuth')
 import { Request, Response, Router } from 'express'
 
 export const route = Router()
+
 
 const errorHandle = (res: Response, errorMessage: string, code: number): void => {
   errorMessage = errorMessage || 'Unknown error'
@@ -30,7 +32,7 @@ const responseHandle = (res: Response, data: any, code: number = 200): void => {
 export default (app: Router) => {
   route.use(isAuth)
   app.use('/profile', route)
-  var editProfileUpload: any = multer({dest: '/temp', limits: { fieldSize: 8 * 1024 * 1024 }}).single('avatar')
+  var editProfileUpload: any = multer({dest: config.multerDestinationPath, limits: { fieldSize: 8 * 1024 * 1024 }}).single('avatar')
   route.post('/edit', editProfileUpload, 
   async (req: Request, res: Response) => {
     /*
