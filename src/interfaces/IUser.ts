@@ -85,6 +85,22 @@ export interface IUser extends Document {
 
   lastMonthDate: Date
 
+  dayBeforeLastDayListens: Array<{
+    id: mongoose.Schema.Types.ObjectId
+    username: String
+    trackslistened: Array<{
+      idoftracklistened: mongoose.Schema.Types.ObjectId
+    }>
+    repeatedtracks: Array<{
+      idofrepeatedtrack: mongoose.Schema.Types.ObjectId
+    }>
+    inspiredArtists : { inspiredArtist: string}[]
+    numberoflistens: Number
+    numberoftrackslistened: Number
+    numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
+    numberofrepeatedlistens: Number
+  }>
+
   lastDayListens: Array<{
     id: mongoose.Schema.Types.ObjectId
     username: String
@@ -100,6 +116,23 @@ export interface IUser extends Document {
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
     numberofrepeatedlistens: Number
   }>
+
+  weekBeforeLastWeekListens: Array<{
+    id: mongoose.Schema.Types.ObjectId
+    username: String
+    trackslistened: Array<{
+      idoftracklistened: mongoose.Schema.Types.ObjectId
+    }>
+    repeatedtracks: Array<{
+      idofrepeatedtrack: mongoose.Schema.Types.ObjectId
+    }>
+    inspiredArtists : { inspiredArtist: string}[]
+    numberoflistens: Number
+    numberoftrackslistened: Number
+    numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
+    numberofrepeatedlistens: Number
+  }>
+
 
   lastWeekListens: Array<{
     id: mongoose.Schema.Types.ObjectId
@@ -117,6 +150,21 @@ export interface IUser extends Document {
     numberofrepeatedlistens: Number
   }>
 
+  monthBeforeLastMonthListens: Array<{
+    id: mongoose.Schema.Types.ObjectId
+    username: String
+    trackslistened: Array<{
+      idoftracklistened: mongoose.Schema.Types.ObjectId
+    }>
+    repeatedtracks: Array<{
+      idofrepeatedtrack: mongoose.Schema.Types.ObjectId
+    }>
+    inspiredArtists : { inspiredArtist: string}[]
+    numberoflistens: Number
+    numberoftrackslistened: Number
+    numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
+    numberofrepeatedlistens: Number
+  }>
   lastMonthListens: Array<{
     id: mongoose.Schema.Types.ObjectId
     username: String

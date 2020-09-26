@@ -153,6 +153,23 @@ const userSchema = new Schema({
     default: Date.now,
     index: true
   },
+  daybeforelastdaylistens: [{ // When a day passes we transfer the date from current day listens to last day listens
+    id: mongoose.Schema.Types.ObjectId, // Artist id 
+    username: String, 
+    trackslistened: [{
+      idoftracklistened: mongoose.Schema.Types.ObjectId
+    }],
+    repeatedtracks : [{
+      idofrepeatedtrack: mongoose.Schema.Types.ObjectId
+    }],
+    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
+      inspiredArtist: String
+    }],
+    numberoflistens: Number,
+    numberoftrackslistened: Number,
+    numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
+    numberofrepeatedlistens: Number
+  }],
   lastdaylistens: [{ // When a day passes we transfer the date from current day listens to last day listens
     id: mongoose.Schema.Types.ObjectId, // Artist id 
     username: String, 
@@ -193,6 +210,23 @@ const userSchema = new Schema({
     index: true,
     default: Date.now
   },
+  weekbeforelastweeklistens: [{ // When a day passes we transfer the date from current day listens to last day listens
+    id: mongoose.Schema.Types.ObjectId,
+    username: String, 
+    trackslistened: [{
+      idoftracklistened: mongoose.Schema.Types.ObjectId
+    }],
+    repeatedtracks : [{
+      idofrepeatedtrack: mongoose.Schema.Types.ObjectId
+    }],
+    inspiredArtists : [{ //Artists that served as an inspiration to the artist for the specifig songs the user is listening  
+      inspiredArtist: String
+    }],
+    numberoflistens: Number,
+    numberoftrackslistened: Number,
+    numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
+    numberofrepeatedlistens: Number
+  }],
   lastweeklistens: [{ // When a day passes we transfer the date from current day listens to last day listens
     id: mongoose.Schema.Types.ObjectId,
     username: String, 
@@ -232,6 +266,23 @@ const userSchema = new Schema({
     index: true,
     default: Date.now
   },
+  monthbeforelastmonthlistens: [{ // When a day passes we transfer the date from current day listens to last day listens
+    id: mongoose.Schema.Types.ObjectId, //Artists' Id 
+    username: String, 
+    trackslistened: [{
+      idoftracklistened: mongoose.Schema.Types.ObjectId
+    }],
+    repeatedtracks : [{
+      idofrepeatedtrack: mongoose.Schema.Types.ObjectId
+    }],
+    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
+      inspiredArtist: String
+    }],
+    numberoflistens: Number,
+    numberoftrackslistened: Number,
+    numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
+    numberofrepeatedlistens: Number
+  }],
   lastmonthlistens: [{ // When a day passes we transfer the date from current day listens to last day listens
     id: mongoose.Schema.Types.ObjectId, //Artists' Id 
     username: String, 
