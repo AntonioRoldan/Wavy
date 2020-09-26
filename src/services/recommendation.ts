@@ -51,6 +51,9 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
     our desired amount of 60 recommended songs 
     Depending on whether we have more new artists than old or viceversa 
     We will choose extra songs from one group or the other*/
+    const mergedArtistsObjects = oldArtistsObj.songsAmountArray.concat(newArtistsObj.songsAmountArray)
+    // Get the songs 
+    // Get the extra songs 
     if(newArtistsObj){ 
       if(oldArtistsObj.songsAmount + newArtistsObj.songsAmount < 60) {
         extraSongs = 60 - oldArtistsObj.songsAmount + newArtistsObj.songsAmount 
@@ -86,6 +89,14 @@ const calculateOldArtistsPercentages = (idsOldArtistsListened: any, user: IUser)
 
 const calculateArtistsSongsAmount = (totalPercentageSum: number, artistsObj: any): Promise<any> => { 
   return new Promise( async (resolve, reject) => {
+    /* 
+    It takes a new artists object or an old artists object with an array of *percentages and the percentage sum of all objects in the array
+    Returns an object with two fields: 
+    -An array of objects containing an artist id 
+    and how many songs by that artist we will select. 
+    -The total amount of songs that will be played 
+    * Check the exact definition of percentage in the context of this algorithm at the top of the file 
+    */
     const amountOfArtistsSongsToRecommendArray = artistsObj.percentagesOfRepeatedListens.map((obj: any) => { return {id: obj.id, percentage: Number(((obj.percentage / totalPercentageSum * 100) * recommendedSongsAmount / 100).toFixed())}})
     const amountOfArtistsSongsToRecommend = amountOfArtistsSongsToRecommendArray.map((obj: any) => obj.percentage).reduce((prev: any, cur: any) => prev + cur)
     resolve({songsAmount: amountOfArtistsSongsToRecommend, songsAmountArray: amountOfArtistsSongsToRecommendArray})
