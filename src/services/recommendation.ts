@@ -23,8 +23,6 @@ export const setUpRecommendationData = async (userId: string) => {
 }
 
 export const checkCurrentDay = (userHasNotListendToAnythingYet: boolean, user: any) => {
-  // NOTE: We do not check if day before last day is empty because we don't have to transfer data from there to any other place
-  // so we do not need to check if it's null 
   const lastDayDate = moment.utc(new Date(user.lastDayDate))
   const currentDate = moment.utc(new Date(Date.now()))
   if(currentDate.diff(lastDayDate, 'days') >= 1) {
@@ -33,10 +31,14 @@ export const checkCurrentDay = (userHasNotListendToAnythingYet: boolean, user: a
         userHasNotListendToAnythingYet = true 
         return 
       }
+      // IF !USER.DAYBEFORELASTDAYLISTENS
       // We transfer data from last Day listens to day before last day listens
       // return, last day listens and day before last day listens will be the same 
-      // So the recommendation won't change 
-
+      // in this case 
+      // ELSE WE DO NOTHING AND RETURN 
+      // This is to avoid the day before last day listens to be filled by last day listens 
+      // data in which case, without any data in current day listens we may spoil the 
+      // recommendation engine because last day listens and day before last day listens would be the same unaccidentally
     }
     if(!user.lastDayListens){
       // If last day listens is empty we know for sure that day before last day listens is also empty
