@@ -7,7 +7,7 @@ var path = require('path')
 // To run tests individually type the following command jest -t '<describeString> <itString>'
 /// ///////// Beat routes //////////
 
-// Credits to stackoverflow for this funny code snippet 
+// Credits to stackoverflow for this nice little trick
 const times = x => f => {
   if (x > 0) {
     f()
@@ -18,8 +18,8 @@ const times = x => f => {
 let fourTimes = times(4)
 
 let twice = times(2)
-// We should have two albums in the database 
-let beatId = '5f57dc34d2c5bdc29ed3d19b' // This beat will always be the same 
+// We should have two albums in the database
+let beatId = '5f57dc34d2c5bdc29ed3d19b' // This beat will always be the same
 let deleteAlbumId = '' // This will be the beat we upload in the tests which will also be deleted
 let trackId = '' // Id for a track to be deleted
 let accessToken = '' // We'll have to change this every hour
@@ -64,7 +64,7 @@ describe('Beat post routes', () => {
 describe('Beat put routes', async () => {
   it('should edit the cover of a beat', async () => {
     try {
-      // TODO: We should have a different image file to test the cover changed in S3 
+      // TODO: We should have a different image file to test the cover changed in S3
       const coverFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'Airbnbplaya2.jpg'))
       const requestInstance = request.put(config.api.beat.root + config.api.beat.editCover + '/' + beatId)
       requestInstance.set('x-access-token', accessToken)

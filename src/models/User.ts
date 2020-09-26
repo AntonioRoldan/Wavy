@@ -188,7 +188,7 @@ const userSchema = new Schema({
     numberofrepeatedlistens: Number
   }],
   //TODO: Add week, and month 
-  currentweekdate : {
+  lastweekdate : {
     type: Date,
     index: true,
     default: Date.now
@@ -227,7 +227,7 @@ const userSchema = new Schema({
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
     numberofrepeatedlistens: Number
   }],
-  currentmonthdate : {
+  lastmonthdate : {
     type: Date,
     index: true,
     default: Date.now
