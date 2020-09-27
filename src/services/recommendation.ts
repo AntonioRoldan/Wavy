@@ -6,7 +6,7 @@ import { IUser, IUser } from "../interfaces/IUser";
 */
 
 const User : Models.UserModel = require('../models/User')
-const Track = require('../models/Track')
+const Track : Models.TrackModel = require('../models/Track')
 const Album = require('../models/Album')
 import mongoose from 'mongoose'
 const moment = require('moment')
@@ -46,22 +46,29 @@ const dailyRecommendations = (user: IUser) => {
 
 const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any): Promise<any> => {
   return new Promise( async (resolve, reject) => {
-    var extraSongs = 0 /* When we get rid of decimals in our calculations 
+    var extraSongsAmount = 0 /* When we get rid of decimals in our calculations 
     // we will be an added amount of decimals short of reaching 
     our desired amount of 60 recommended songs 
     Depending on whether we have more new artists than old or viceversa 
     We will choose extra songs from one group or the other*/
     const mergedArtistsObjects = oldArtistsObj.songsAmountArray.concat(newArtistsObj.songsAmountArray)
+    var recommendedTracks = mergedArtistsObjects.map( async (obj: any) => { 
+      const tracks = await Track.find({inspiredArtists: obj.inspiredArtists}) // TODO: Check if this works 
+      extraSongsAmount += tracks.length < obj.amount ? obj.amount - tracks.length : extraSongsAmount
+      if(tracks.length < obj.amount) { // If the artist does not have an enough amount of songs to satisfy our criteria 
+        extraSongsAmount += obj.amount - tracks.length 
+      }
+      return {id: obj.id, tracks: tracks}
+    }) 
     // Get the songs 
     // Get the extra songs 
     if(newArtistsObj){ 
       if(oldArtistsObj.songsAmount + newArtistsObj.songsAmount < 60) {
-        extraSongs = 60 - oldArtistsObj.songsAmount + newArtistsObj.songsAmount 
+        extraSongsAmount = 60 - oldArtistsObj.songsAmount + newArtistsObj.songsAmount 
       }
       // Now we extract the respective amount of songs for each artist, accounting for the inspiredArtists variable
-    }
-    if(oldArtistsObj.songsAmount < 60) {
-      extraSongs = 60 - oldArtistsObj.songsAmount
+    } else if(oldArtistsObj.songsAmount < 60) {
+      extraSongsAmount = 60 - oldArtistsObj.songsAmount
     }
   })
 }
@@ -70,7 +77,7 @@ const calculateNewArtistsPercentages = (idsNewArtistsListenedOnLastDay: any, use
   return new Promise( async (resolve, reject) => {
     const newArtistsListenedOnLastDay = idsNewArtistsListenedOnLastDay.map((id: any) => user.lastDayListens.filter(obj => obj.id === id)[0])
     if(newArtistsListenedOnLastDay) {
-      var percentagesOfRepeatedListensNew = newArtistsListenedOnLastDay.map((obj: any) => { return {id: obj.id, percentage: Number((Number(obj.numberofrepeatedlistens) / Number(obj.numberoflistens) + Number(obj.numberofrepeatedtracks) / Number(obj.numberoftrackslistened)).toFixed())}})
+      var percentagesOfRepeatedListensNew = newArtistsListenedOnLastDay.map((obj: any) => { return {id: obj.id, inspiredArtists: obj.inspiredArtists, percentage: Number((Number(obj.numberofrepeatedlistens) / Number(obj.numberoflistens) + Number(obj.numberofrepeatedtracks) / Number(obj.numberoftrackslistened)).toFixed())}})
       const percentageSumNew = percentagesOfRepeatedListensNew.map((obj: any) => obj.percentage).reduce((prev: any, cur: any) => prev + cur)
       resolve({percentageSum: percentageSumNew, percentagesOfRepeatedListens: percentagesOfRepeatedListensNew})      
     }
@@ -81,7 +88,7 @@ const calculateNewArtistsPercentages = (idsNewArtistsListenedOnLastDay: any, use
 const calculateOldArtistsPercentages = (idsOldArtistsListened: any, user: IUser): Promise<any> => {
   return new Promise( async (resolve, reject) => {
     const oldArtistsListened = idsOldArtistsListened.map((id: any) => user.dayBeforeLastDayListens.filter(obj => obj.id === id)[0])
-    var percentagesOfRepeatedListensOld = oldArtistsListened.map((obj: any) => { return {id: obj.id, percentage: Number((Number(obj.numberofrepeatedlistens) / Number(obj.numberoflistens) + Number(obj.numberofrepeatedtracks) / Number(obj.numberoftrackslistened)).toFixed())}})
+    var percentagesOfRepeatedListensOld = oldArtistsListened.map((obj: any) => { return {id: obj.id, inspiredArtists: obj.inspiredArtists, percentage: Number((Number(obj.numberofrepeatedlistens) / Number(obj.numberoflistens) + Number(obj.numberofrepeatedtracks) / Number(obj.numberoftrackslistened)).toFixed())}})
     const percentageSumNew = percentagesOfRepeatedListensOld.map((obj: any) => obj.percentage).reduce((prev: any, cur: any) => prev + cur)
     resolve({percentageSum: percentageSumNew, percentagesOfRepeatedListens: percentagesOfRepeatedListensOld})      
   })
@@ -97,7 +104,7 @@ const calculateArtistsSongsAmount = (totalPercentageSum: number, artistsObj: any
     -The total amount of songs that will be played 
     * Check the exact definition of percentage in the context of this algorithm at the top of the file 
     */
-    const amountOfArtistsSongsToRecommendArray = artistsObj.percentagesOfRepeatedListens.map((obj: any) => { return {id: obj.id, percentage: Number(((obj.percentage / totalPercentageSum * 100) * recommendedSongsAmount / 100).toFixed())}})
+    const amountOfArtistsSongsToRecommendArray = artistsObj.percentagesOfRepeatedListens.map((obj: any) => { return {id: obj.id, inspiredArtists: obj.inspiredArtists, amount: Number(((obj.percentage / totalPercentageSum * 100) * recommendedSongsAmount / 100).toFixed())}})
     const amountOfArtistsSongsToRecommend = amountOfArtistsSongsToRecommendArray.map((obj: any) => obj.percentage).reduce((prev: any, cur: any) => prev + cur)
     resolve({songsAmount: amountOfArtistsSongsToRecommend, songsAmountArray: amountOfArtistsSongsToRecommendArray})
   })

@@ -14,15 +14,10 @@ import { EventDispatcher, EventDispatcherInterface } from '../decorators/eventDi
 export default class PlaylistService {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
-    private s3Service: S3Service,
-
-    private trackService: TrackService,
     @Inject('playlistModel') private playlistModel: Models.PlaylistsModel,
 
     @Inject('trackModel') private trackModel: Models.TrackModel,
-    @Inject('albumModel') private albumModel: Models.AlbumModel,
 
-    @EventDispatcher() private eventDispatcher: EventDispatcherInterface
   ) {}
 
   // CREATE METHODS

@@ -162,9 +162,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist we are listening 
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -179,9 +179,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist we are listening 
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -196,9 +196,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist we are listening 
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -219,9 +219,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist for the specifig songs the user is listening  
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist for the specifig songs the user is listening  
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -236,9 +236,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist for the specifig songs the user is listening  
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist for the specifig songs the user is listening  
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -253,9 +253,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist we are listening 
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -275,9 +275,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
-      inspiredArtist: String
-    }],
+    inspiredArtists : [//Artists that served as an inspiration to the artist we are listening 
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -292,9 +292,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
-    inspiredArtists : [{ //Artists that served as an inspiration to the artist we are listening 
-      inspiredArtist: String
-    }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist we are listening 
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 
@@ -309,6 +309,9 @@ const userSchema = new Schema({
     repeatedtracks : [{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }],
+    inspiredArtists : [ //Artists that served as an inspiration to the artist
+      String
+    ],
     numberoflistens: Number,
     numberoftrackslistened: Number,
     numberofrepeatedtracks: Number, //Number of tracks that have been listened to more than once 

@@ -94,7 +94,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -110,7 +110,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -126,7 +126,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -143,7 +143,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -159,7 +159,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -174,7 +174,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -190,7 +190,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -206,7 +206,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
@@ -222,7 +222,7 @@ export interface IUser extends Document {
     repeatedtracks: Array<{
       idofrepeatedtrack: mongoose.Schema.Types.ObjectId
     }>
-    inspiredArtists : { inspiredArtist: string}[]
+    inspiredArtists : string[]
     numberoflistens: Number
     numberoftrackslistened: Number
     numberofrepeatedtracks: Number //Number of tracks that have been listened to more than once
