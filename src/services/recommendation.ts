@@ -51,33 +51,93 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
     our desired amount of 60 recommended songs 
     Depending on whether we have more new artists than old or viceversa 
     We will choose extra songs from one group or the other*/
+    var recommendedTracks: any[] = []
     const mergedArtistsObjects = oldArtistsObj.songsAmountArray.concat(newArtistsObj.songsAmountArray)
-    var recommendedTracks = mergedArtistsObjects.map( async (obj: any) => { 
-      const tracks = await Track.find({inspiredArtists: obj.inspiredArtists}) // TODO: Check if this works 
-      extraSongsAmount += tracks.length < obj.amount ? obj.amount - tracks.length : extraSongsAmount
-      if(tracks.length < obj.amount) { // If the artist does not have an enough amount of songs to satisfy our criteria 
-        extraSongsAmount += obj.amount - tracks.length 
-      }
-      return {id: obj.id, tracks: tracks}
+    var artistsSelectedTracks = mergedArtistsObjects.map( async (obj: any) => { 
+      const tracks = await Track.find({authorId: obj.id, inspiredArtists: obj.inspiredArtists}) // TODO: Check if this works 
+      extraSongsAmount += tracks.length < obj.songsAmount ? obj.songsAmount - tracks.length : extraSongsAmount
+      // If the artist does not have an enough amount of songs to satisfy our criteria 
+      return {id: obj.id, amount: obj.songsAmount, tracks: tracks}
     }) 
+    recommendedTracks = artistsSelectedTracks.flatMap((artist: any) => {
+      return artist.tracks
+    })
+    recommendedTracks.concat(await getExtraSongs(extraSongsAmount, artistsSelectedTracks, newArtistsObj, oldArtistsObj))
     // Get the extra songs 
     // The extra songs come from the added decimals that we removed when fixing our floats from percentage calculations
     // with respect to sixty and songs that were lacking in our search for a desired amount of songs per artist
     // Now we are going to check if our user has changed his listening patterns towards new artists or not
     // In order to get our extra songs from new artists or older artists
+    
   })
 }
 
-const getExtraSongs = (extraSongsAmount: number, newArtistsObj: any, oldArtistsObj: any): Promise<any> => { 
+const getExtraSongs = (extraSongsAmount: number, artistsSelectedTracks: any[], newArtistsObj: any, oldArtistsObj: any): Promise<any[]> => { 
   return new Promise( async (resolve, reject) => {
+    var extraTracks: any[] = []
+    var inspiredArtists: any[] = []
     if(newArtistsObj){ 
       if(oldArtistsObj.songsAmount + newArtistsObj.songsAmount < 60) {
         extraSongsAmount = 60 - oldArtistsObj.songsAmount + newArtistsObj.songsAmount 
       }
-
+      if(newArtistsObj.songsAmount >= oldArtistsObj.songsAmount) {
+        extraTracks = artistsSelectedTracks.map(artist => {
+          const isNewArtist = newArtistsObj.songAmountArray.filter((obj: any) => { // If the artist is a new artist
+            obj.id === artist.id
+          })[0]
+          if(isNewArtist){
+            inspiredArtists.concat(isNewArtist.inspiredArtists)
+            extraSongsAmount -= 1 
+            return artist.tracks[Math.random() * (artist.tracks.length - 1 - 0) + 0]
+          }
+        })
+        if(extraSongsAmount){
+          const tracks = await Track.find({inspiredArtists: inspiredArtists})
+          while(extraSongsAmount){
+            extraSongsAmount -= 1
+            extraTracks.push(tracks[Math.random() * (tracks.length - 1 - 0) + 0])
+          }
+        }
+      } else {
+        extraTracks = artistsSelectedTracks.map(artist => {
+          const isOldArtist = oldArtistsObj.songAmountArray.filter((obj: any) => { // If the artist is a new artist
+            obj.id === artist.id
+          })[0]
+          if(isOldArtist){
+            inspiredArtists.concat(isOldArtist.inspiredArtists)
+            extraSongsAmount -= 1 
+            return artist.tracks[Math.random() * (artist.tracks.length - 1 - 0) + 0]
+          }
+        })
+        if(extraSongsAmount){
+          const tracks = await Track.find({inspiredArtists: inspiredArtists})
+          while(extraSongsAmount){
+            extraSongsAmount -= 1
+            extraTracks.push(tracks[Math.random() * (tracks.length - 1 - 0) + 0])
+          }
+        }
+      }
     } else if(oldArtistsObj.songsAmount < 60) {
       extraSongsAmount = 60 - oldArtistsObj.songsAmount
+      extraTracks = artistsSelectedTracks.map(artist => {
+        const isOldArtist = oldArtistsObj.songAmountArray.filter((obj: any) => { // If the artist is a new artist
+          obj.id === artist.id
+        })[0]
+        if(isOldArtist){
+          inspiredArtists.concat(isOldArtist.inspiredArtists)
+          extraSongsAmount -= 1 
+          return artist.tracks[Math.random() * (artist.tracks.length - 1 - 0) + 0]
+        }
+      })
+      if(extraSongsAmount){
+        const tracks = await Track.find({inspiredArtists: inspiredArtists})
+        while(extraSongsAmount){
+          extraSongsAmount -= 1
+          extraTracks.push(tracks[Math.random() * (tracks.length - 1 - 0) + 0])
+        }
+      }
     }
+    resolve(extraTracks)
   })
 }
 
