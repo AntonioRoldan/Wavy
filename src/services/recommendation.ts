@@ -74,7 +74,7 @@ const getExtraSongs = (extraSongsAmount: number, newArtistsObj: any, oldArtistsO
       if(oldArtistsObj.songsAmount + newArtistsObj.songsAmount < 60) {
         extraSongsAmount = 60 - oldArtistsObj.songsAmount + newArtistsObj.songsAmount 
       }
-      // Now we extract the respective amount of songs for each artist, accounting for the inspiredArtists variable
+
     } else if(oldArtistsObj.songsAmount < 60) {
       extraSongsAmount = 60 - oldArtistsObj.songsAmount
     }
@@ -234,7 +234,7 @@ const checkCurrentMonth = (firstMonthOfUsageHasNotPassed: boolean, user: IUser):
   return new Promise( async (resolve, reject) => {
     const lastMonthDate = moment.utc(new Date(user.lastMonthDate))
     const currentDate = moment.utc(new Date(Date.now()))
-    if(currentDate.diff(lastMonthDate, 'days') >= 7) {
+    if(currentDate.diff(lastMonthDate, 'days') >= 30) {
       if(!user.currentMonthListens) {
         if(!user.lastMonthListens){
           firstMonthOfUsageHasNotPassed = true 
