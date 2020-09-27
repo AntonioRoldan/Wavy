@@ -60,8 +60,16 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
       }
       return {id: obj.id, tracks: tracks}
     }) 
-    // Get the songs 
     // Get the extra songs 
+    // The extra songs come from the added decimals that we removed when fixing our floats from percentage calculations
+    // with respect to sixty and songs that were lacking in our search for a desired amount of songs per artist
+    // Now we are going to check if our user has changed his listening patterns towards new artists or not
+    // In order to get our extra songs from new artists or older artists
+  })
+}
+
+const getExtraSongs = (extraSongsAmount: number, newArtistsObj: any, oldArtistsObj: any): Promise<any> => { 
+  return new Promise( async (resolve, reject) => {
     if(newArtistsObj){ 
       if(oldArtistsObj.songsAmount + newArtistsObj.songsAmount < 60) {
         extraSongsAmount = 60 - oldArtistsObj.songsAmount + newArtistsObj.songsAmount 
