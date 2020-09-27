@@ -9,6 +9,7 @@ const User : Models.UserModel = require('../models/User')
 const Track : Models.TrackModel = require('../models/Track')
 const Album = require('../models/Album')
 import mongoose from 'mongoose'
+import { shuffle } from "lodash";
 const moment = require('moment')
 const recommendedSongsAmount = 60 
 // We are going to go functional for this
@@ -16,6 +17,26 @@ const recommendedSongsAmount = 60
 /* Music recommendation algorithm explaned 
 
 */
+
+function shuffle(array: any[]) {
+  //  Fisher-Yates (aka Knuth) shuffle algorithm
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
 export const getRecommendations = async (userId: string) => {
   var userHasNotListenedToAnythingYet = false 
   var firstWeekOfUsageHasNotPassed = false
@@ -52,23 +73,39 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
     Depending on whether we have more new artists than old or viceversa 
     We will choose extra songs from one group or the other*/
     var recommendedTracks: any[] = []
+    var extraTracks: any[] = []
+    var playlists: any[] = [] // Two dimensional array containing arrays with tracks
+    var playlist: any[] = [] // Array chunk
+    const playlistSize = 10
+    var thresholdIndex = playlistSize - 1 
     const mergedArtistsObjects = oldArtistsObj.songsAmountArray.concat(newArtistsObj.songsAmountArray)
     var artistsSelectedTracks = mergedArtistsObjects.map( async (obj: any) => { 
       const tracks = await Track.find({authorId: obj.id, inspiredArtists: obj.inspiredArtists}) // TODO: Check if this works 
       extraSongsAmount += tracks.length < obj.songsAmount ? obj.songsAmount - tracks.length : extraSongsAmount
       // If the artist does not have an enough amount of songs to satisfy our criteria 
-      return {id: obj.id, amount: obj.songsAmount, tracks: tracks}
-    }) 
+      return {id: obj.id, songsAmount: obj.songsAmount, tracks: tracks}
+    }) // We add all the posible tracks without factoring in the amount of songs by a specific artist so we can fill the extra songs array
+    extraTracks = await getExtraSongs(extraSongsAmount, artistsSelectedTracks, newArtistsObj, oldArtistsObj)
     recommendedTracks = artistsSelectedTracks.flatMap((artist: any) => {
-      return artist.tracks
-    })
+      var canSelectAmount = 0 // We get the amount of possible candidates f we do not have our desired amount of songs matching our criteria 
+      artist.tracks = artist.tracks.filter((track: any) => {
+        !extraTracks.includes(track)
+      })
+      canSelectAmount = artist.songsAmount > artist.tracks.length ? artist.tracks.length : artist.songsAmount
+      artist.tracks.sort(() => 0.5 - Math.random()).slice(0, canSelectAmount) // We select our desired amount of random songs from the array
+    }) // We make sure that the recommended tracks do not belong to extraTracks
     recommendedTracks.concat(await getExtraSongs(extraSongsAmount, artistsSelectedTracks, newArtistsObj, oldArtistsObj))
-    // Get the extra songs 
-    // The extra songs come from the added decimals that we removed when fixing our floats from percentage calculations
-    // with respect to sixty and songs that were lacking in our search for a desired amount of songs per artist
-    // Now we are going to check if our user has changed his listening patterns towards new artists or not
-    // In order to get our extra songs from new artists or older artists
-    
+    shuffle(recommendedTracks)
+    recommendedTracks.forEach((value, index) => {
+      if(index == thresholdIndex) { 
+        playlists.push(playlist)
+        playlist = []
+        thresholdIndex += playlistSize // We set the point at which we'll get our next chunk
+      }
+      playlist.push(value)
+    })
+    console.log('playlists :', playlists)
+    return playlists
   })
 }
 
