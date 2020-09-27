@@ -107,7 +107,7 @@ export default (app: Router) => {
     req.body.tracks = {tracks: [{
     "title": , "inspiredArtists": ["", ""], "genres": [], "isPremium": false
     , "hasImage": false}]} 
-    req.files = {tracks: [], images: []}
+    req.files = {tracks: []}
     */
     // TODO: USER SECURITY CHECK
 
@@ -119,6 +119,8 @@ export default (app: Router) => {
       const trackObjects = JSON.parse(req.body.tracks)
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)
+      if(files.length != trackObjects.tracks.length) 
+      { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       publishToQueue(config.queues.album.addNewTracks, JSON.stringify({userId, albumId: req.params.albumId, trackObjects, trackFiles: files}))
       .then(() => {
         eventDispatcher.dispatch(events.album.addNewTracks) // We run the queue's worker 

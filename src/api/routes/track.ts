@@ -67,7 +67,7 @@ export default (app: Router) => {
       const authServiceInstance = Container.get(AuthService)
       const trackObjects = JSON.parse(req.body.tracks)
       const files = req.files as { [fieldname: string]: Express.Multer.File[] }
-      if(files['tracks'].length != trackObjects.tracks.length || files['images'].length != trackObjects.tracks.length) 
+      if(files['tracks'].length != trackObjects.tracks.length) 
       { errorHandle(res, 'Length of uploaded tracks and uploaded files not matching', 400) }
       const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
       const userId = await authServiceInstance.getUserId(token)

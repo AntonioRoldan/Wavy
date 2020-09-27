@@ -79,9 +79,9 @@ describe('Beat put routes', async () => {
   it('should edit a beats name', async () => {
     try {
       const requestInstance = request.put(config.api.beat.root + config.api.beat.editName + '/' + beatId + '/' + 'LALALA')
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       expect(res.text).toEqual('LALALA')
     } catch (err) {
       console.log('Edit beats name route error :', err)
@@ -118,9 +118,9 @@ describe('Beat delete routes', async () => {
   it('should delete an beat', async () => {
     try {
       const requestInstance = request.delete(config.api.beat.root + config.api.beat.delete + '/' + deleteAlbumId)
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       expect(res.text).toEqual('Beat being deleted')
     } catch (err) {
       console.log('Delete beat route error :', err)
@@ -129,9 +129,9 @@ describe('Beat delete routes', async () => {
   it('should delete an beat track', async () => {
     try {
       const requestInstance = request.delete(config.api.beat.root + config.api.beat.deleteTrack + '/' + trackId)
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       expect(res.text).toEqual('Deleting track for beat')
     } catch (err) {
       console.log('Delete beat track route error :', err)

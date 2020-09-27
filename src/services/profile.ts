@@ -102,7 +102,7 @@ export default class UserService {
         const user = await this.userModel.findById(userId)
         const albums = await this.albumService.getUserAlbums(userId, loggedInUserId)
         const beats = await this.beatService.getUserBeats(userId, loggedInUserId)
-        const tracks = await this.trackService.getUserTracks(userId, loggedInUserId)
+        const tracks = await this.trackService.getUserTracks(userId, loggedInUserId) // TODO It should return the top ten tracks only
         userInfo.avatar = user.avatarURL
         userInfo.followerCount = user.followers.length
         userInfo.followeeCount = user.follows.length
@@ -114,9 +114,10 @@ export default class UserService {
         userInfo.albumsCount = albums.length
         userInfo.beatsCount = beats.length 
         userInfo.tracksCount = tracks.length 
-        userInfo.albums = albums
-        userInfo.beats= beats 
-        userInfo.tracks = tracks 
+        userInfo.albums = albums.length >= 4 ? albums.slice(0, 4) : albums 
+        userInfo.beats= beats.length >= 4 ? beats.slice(0, 4) : beats
+        userInfo.tracks = tracks.length >= 5 ? tracks.slice(0, 5) : tracks 
+        resolve(userInfo)
       } catch(err) {
         reject({code: err.code || 500, msg: err.message || err.msg})
       }

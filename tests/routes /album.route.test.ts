@@ -78,9 +78,9 @@ describe('Album put routes', async () => {
   it('should edit an albums name', async () => {
     try {
       const requestInstance = request.put(config.api.album.root + config.api.album.editName + '/' + albumId + '/' + 'LALALA')
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       expect(res.text).toEqual('LALALA')
     } catch (err) {
       console.log('Edit albums name route error :', err)
@@ -102,9 +102,9 @@ describe('Album get routes', async () => {
     try {
       const searchTerm = 'Su'
       const requestInstance = request.get(config.api.album.root + config.api.album.search + '/' + searchTerm)
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       // expect(res.body.results[0]).toEqual({ id: album._id, cover: , title: "Sup", author: author.username, authorId: author._id})
     } catch (err) {
       console.log('Search album route error :', err)
@@ -116,9 +116,9 @@ describe('Album delete routes', async () => {
   it('should delete an album', async () => {
     try {
       const requestInstance = request.delete(config.api.album.root + config.api.album.delete + '/' + deleteAlbumId)
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       expect(res.text).toEqual('Album being deleted')
     } catch (err) {
       console.log('Delete album route error :', err)
@@ -127,9 +127,9 @@ describe('Album delete routes', async () => {
   it('should delete an album track', async () => {
     try {
       const requestInstance = request.delete(config.api.album.root + config.api.album.deleteTrack + '/' + trackId)
-      const res = await requestInstance
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
       expect(res.text).toEqual('Deleting track for album')
     } catch (err) {
       console.log('Delete album track route error :', err)
