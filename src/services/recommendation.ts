@@ -79,7 +79,7 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
     var thresholdIndex = playlistSize - 1 
     const mergedArtistsObjects = oldArtistsObj.songsAmountArray.concat(newArtistsObj.songsAmountArray)
     var artistsSelectedTracks = mergedArtistsObjects.map( async (obj: any) => { 
-      const tracks = await Track.find({authorId: obj.id, inspiredArtists: obj.inspiredArtists}) // TODO: Check if this works 
+      const tracks = await Track.find({authorId: obj.id, inspiredArtists: {$in: obj.inspiredArtists}}) // TODO: Check if this works 
       extraSongsAmount += tracks.length < obj.songsAmount ? obj.songsAmount - tracks.length : extraSongsAmount
       // If the artist does not have an enough amount of songs to satisfy our criteria 
       return {id: obj.id, songsAmount: obj.songsAmount, tracks: tracks}
@@ -128,7 +128,7 @@ const getExtraSongs = (extraSongsAmount: number, artistsSelectedTracks: any[], n
           }
         })
         if(extraSongsAmount){
-          const tracks = await Track.find({inspiredArtists: inspiredArtists})
+          const tracks = await Track.find({inspiredArtists: { $in: inspiredArtists}})
           while(extraSongsAmount){
             extraSongsAmount -= 1
             extraTracks.push(tracks[Math.random() * (tracks.length - 1 - 0) + 0])
@@ -146,7 +146,7 @@ const getExtraSongs = (extraSongsAmount: number, artistsSelectedTracks: any[], n
           }
         })
         if(extraSongsAmount){
-          const tracks = await Track.find({inspiredArtists: inspiredArtists})
+          const tracks = await Track.find({inspiredArtists: {$in: inspiredArtists}})
           while(extraSongsAmount){
             extraSongsAmount -= 1
             extraTracks.push(tracks[Math.random() * (tracks.length - 1 - 0) + 0])
@@ -166,7 +166,7 @@ const getExtraSongs = (extraSongsAmount: number, artistsSelectedTracks: any[], n
         }
       })
       if(extraSongsAmount){
-        const tracks = await Track.find({inspiredArtists: inspiredArtists})
+        const tracks = await Track.find({inspiredArtists: {$in: inspiredArtists}})
         while(extraSongsAmount){
           extraSongsAmount -= 1
           extraTracks.push(tracks[Math.random() * (tracks.length - 1 - 0) + 0])
