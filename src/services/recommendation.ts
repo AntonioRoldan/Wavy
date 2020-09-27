@@ -1,4 +1,4 @@
-import { IUser, IUser } from "../interfaces/IUser";
+import { IUser } from "../interfaces/IUser";
 
 /*  
   Copyright (c) 2020 Antonio Roldan 
@@ -7,11 +7,8 @@ import { IUser, IUser } from "../interfaces/IUser";
 
 const User : Models.UserModel = require('../models/User')
 const Track : Models.TrackModel = require('../models/Track')
-const Album = require('../models/Album')
-import mongoose from 'mongoose'
-import { shuffle } from "lodash";
 const moment = require('moment')
-const recommendedSongsAmount = 60 
+const recommendedSongsAmount = 40
 // We are going to go functional for this
 
 /* Music recommendation algorithm explaned 
@@ -41,15 +38,16 @@ export const getRecommendations = async (userId: string) => {
   var userHasNotListenedToAnythingYet = false 
   var firstWeekOfUsageHasNotPassed = false
   var firstMonthOfUsageHasNotPassed = false 
+  var dailyRecommendations: any[][] = []
   var user = await User.findById(userId) 
   // We alter the user document to set up the data for the daily, weekly and monthly recommendation algorithm to run
   user = await checkCurrentDay(userHasNotListenedToAnythingYet, user) 
   user = await checkCurrentWeek(firstWeekOfUsageHasNotPassed, user)
   user = await checkCurrentMonth(firstMonthOfUsageHasNotPassed, user)
-
+  dailyRecommendations = await getDailyRecommendations(user)
 }
 
-const dailyRecommendations = (user: IUser) => {
+const getDailyRecommendations = (user: IUser): Promise<any[][]>=> {
   return new Promise( async (resolve, reject) => {
     // First we check for artists on the last day that are not in the day before the last day array (newly discovered artists)
     // Why do we split artists into newly discovered and old artists? 
@@ -62,6 +60,7 @@ const dailyRecommendations = (user: IUser) => {
     const newArtistsSongsObj = await calculateArtistsSongsAmount(totalPercentageSum, newArtistsObj)
     const oldArtistsSongsObj = await calculateArtistsSongsAmount(totalPercentageSum, oldArtistsObj)
     const recommendedSongsPlaylists = await getRecommendedSongs(user, oldArtistsSongsObj, newArtistsSongsObj)
+    resolve(recommendedSongsPlaylists)
   })
 }
 
@@ -94,7 +93,7 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
       canSelectAmount = artist.songsAmount > artist.tracks.length ? artist.tracks.length : artist.songsAmount
       artist.tracks.sort(() => 0.5 - Math.random()).slice(0, canSelectAmount) // We select our desired amount of random songs from the array
     }) // We make sure that the recommended tracks do not belong to extraTracks
-    recommendedTracks.concat(await getExtraSongs(extraSongsAmount, artistsSelectedTracks, newArtistsObj, oldArtistsObj))
+    recommendedTracks.concat(extraTracks)
     shuffle(recommendedTracks)
     recommendedTracks.forEach((value, index) => {
       if(index == thresholdIndex) { 
@@ -105,7 +104,7 @@ const getRecommendedSongs = (user: IUser, oldArtistsObj: any, newArtistsObj: any
       playlist.push(value)
     })
     console.log('playlists :', playlists)
-    return playlists
+    resolve(playlists)
   })
 }
 
