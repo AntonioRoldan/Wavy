@@ -8,6 +8,7 @@ request = request('http://localhost:8000/')
 let deleteTrackId = '' // This will be the album we upload in the tests which will also be deleted
 let trackId = ''
 let searchTerm = 'Su'
+let userId = ''
 const times = x => f => {
   if (x > 0) {
     f()
@@ -51,6 +52,16 @@ describe('Track get routes', async () => {
       const res = await requestInstance
     } catch (err) {
       console.log('Search tracks route error :', err)
+    }
+  })
+  it('should show user tracks', async () => {
+    try {
+      const requestInstance = request.get(config.api.track.root + config.api.track.getUserTracks + '/' + userId)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
+    } catch (err) {
+      console.log('User tracks route error :', err)
     }
   })
 })

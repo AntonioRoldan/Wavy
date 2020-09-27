@@ -116,6 +116,19 @@ export default (app: Router) => {
     }
   })
 
+  route.get('/user_tracks/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.userId
+      const trackServiceInstance = Container.get(TrackService)
+      const authServiceInstance = Container.get(AuthService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const loggedInUserId = await authServiceInstance.getUserId(token)
+      const responseData = await trackServiceInstance.getUserTracks(userId, loggedInUserId)
+      responseHandle(res, responseData)
+    } catch (err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
   route.get('/search/', async (req: Request, res: Response) => {
     // /search?term=value 
     try {

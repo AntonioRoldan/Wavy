@@ -24,6 +24,7 @@ let deleteAlbumId = '' // This will be the beat we upload in the tests which wil
 let trackId = '' // Id for a track to be deleted
 let accessToken = '' // We'll have to change this every hour
 let refreshToken = '' // The refresh token lasts for a month
+let userId = ''
 describe('Beat post routes', () => {
   it('should upload an beat', async () => {
     try {
@@ -110,6 +111,16 @@ describe('Beat get routes', async () => {
       // expect(res.body.results[0]).toEqual({ id: beat._id, cover: , title: "Sup", author: author.username, authorId: author._id})
     } catch (err) {
       console.log('Search beat route error :', err)
+    }
+  })
+  it('should show user beats', async () => {
+    try {
+      const requestInstance = request.get(config.api.beat.root + config.api.beat.getUserBeats + '/' + userId)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
+    } catch (err) {
+      console.log('User beats route error :', err)
     }
   })
 })

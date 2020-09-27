@@ -48,6 +48,7 @@ const config = {
       root: '/albums',
       upload: '/upload',
       search: '/search', // /search?term=value
+      getUserAlbums: '/user_albums', // parameters :/userId
       addNewTracks: '/add_new_tracks', // parameters: /:albumId
       show: '/show', // paramters: /:id
       editName: '/edit_name', // parameters: /:id/:name
@@ -60,6 +61,7 @@ const config = {
       root: '/beats',
       upload: '/upload',
       search: '/search', // /search?term=value
+      getUserBeats: '/user_beats', // /parameters :userId
       addNewTracks: '/add_new_tracks', // parameters: /:beatId
       show: '/show', // paramters: /:id
       editName: '/edit_name', // parameters: /:id/:name
@@ -73,6 +75,7 @@ const config = {
       editCover: '/edit_cover', // parameters: /:id
       editName: '/edit_name', // parameters: /:trackId/:name
       search: '/search', // /search?term=value
+      getUserTracks: '/user_tracks', // /parameters :userId
       delete: '/delete' // parameters: /:id
     },
     payment: {

@@ -23,6 +23,7 @@ let deleteAlbumId = '' // This will be the album we upload in the tests which wi
 let trackId = ''
 let accessToken = '' // We'll have to change this every hour
 let refreshToken = '' // The refresh token lasts for a month
+let userId = ''
 describe('Album post routes', () => {
   it('should upload an album', async () => {
     try {
@@ -108,6 +109,16 @@ describe('Album get routes', async () => {
       // expect(res.body.results[0]).toEqual({ id: album._id, cover: , title: "Sup", author: author.username, authorId: author._id})
     } catch (err) {
       console.log('Search album route error :', err)
+    }
+  })
+  it('should show user albums', async () => {
+    try {
+      const requestInstance = request.get(config.api.album.root + config.api.album.getUserAlbums + '/' + userId)
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
+    } catch (err) {
+      console.log('User albums route error :', err)
     }
   })
 })
