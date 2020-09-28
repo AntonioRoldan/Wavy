@@ -95,7 +95,7 @@ describe('Playlist get routes', async () => {
   it('should search for playlists matching our search term', async () => {
     try {
       const searchTerm = 'Su'
-      const requestInstance = request.get(config.api.playlist.root + config.api.playlist.search + '/' + searchTerm)
+      const requestInstance = request.get(config.api.playlist.root + config.api.playlist.search + '/' + '?term=' + searchTerm)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance

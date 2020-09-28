@@ -114,6 +114,17 @@ export default class BeatService {
 
   // MARK: Read 
 
+  public getBeats(userId: string, skip: number, limit: number) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await this.userModel.findById(userId)
+        const beats = await this.beatModel.find({genres : { $in: user.favoriteGenres }}).skip(skip).limit(limit)
+        resolve(beats)
+      } catch (err) {
+        reject({code: 500, msg: err.message || err.msg})
+      }
+    })
+  }
   public searchBeat(search: string): Promise<any> {
     // TODO: Test this 
     return new Promise( async (resolve, reject) => {

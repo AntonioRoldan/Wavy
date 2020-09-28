@@ -55,7 +55,7 @@ export default class PaymentService {
               price: userIsSubscribedToAuthor ? Number(itemDoc.subscriptionDiscount) * Number(itemDoc.price) : itemDoc.setDiscount ? Number(itemDoc.discount) * Number(itemDoc.price) : Number(itemDoc.price), 
             }
           })
-          resolve(shoppingCartData)
+          resolve({shoppingCart: shoppingCartData})
         } catch (err) {
           reject({code: 500, msg: err.message || err.msg})
         }

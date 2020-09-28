@@ -189,6 +189,21 @@ export default (app: Router) => {
     }
   })
 
+  route.get('/beats_shop/', async (req: Request, res: Response) => {
+    try {
+      const skip = Number(req.query.skip)
+      const limit = Number(req.query.limit)
+      const authServiceInstance = Container.get(AuthService)
+      const beatServiceInstance = Container.get(BeatService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const responseData = await beatServiceInstance.getBeats(userId, skip, limit)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
   route.put('/edit_cover/:beatId', async (req: Request, res: Response) => {
     // TODO: USER SECURITY CHECK
      try {

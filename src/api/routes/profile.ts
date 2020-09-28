@@ -79,4 +79,26 @@ export default (app: Router) => {
       errorHandle(res, err.msg, err.code)
     }
   })
+
+  route.get('/search' , async (req: Request, res: Response) => {
+    try {
+      const searchTerm = req.query.term as string
+      const profileServiceInstance = Container.get(UserService)
+      const responseData = await profileServiceInstance.search(searchTerm)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
+  route.get('general_search', async (req: Request, res: Response) => {
+    try {
+      const searchTerm = req.query.term as string
+      const profileServiceInstance = Container.get(UserService)
+      const responseData = await profileServiceInstance.generalSearch(searchTerm)
+      responseHandle(res, responseData)
+    } catch (err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
 }

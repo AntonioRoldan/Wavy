@@ -46,7 +46,7 @@ describe('Track post routes', async () => {
 describe('Track get routes', async () => {
   it('should search for a track', async () => {
     try {
-      const requestInstance = request.get(config.api.track.root + config.api.track.search + '/' + searchTerm)
+      const requestInstance = request.get(config.api.track.root + config.api.track.search + '/' + '?term=' + searchTerm)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance

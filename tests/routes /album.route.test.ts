@@ -102,7 +102,7 @@ describe('Album get routes', async () => {
   it('should search for albums matching our search term', async () => {
     try {
       const searchTerm = 'Su'
-      const requestInstance = request.get(config.api.album.root + config.api.album.search + '/' + searchTerm)
+      const requestInstance = request.get(config.api.album.root + config.api.album.search + '/' + '?term=' + searchTerm)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance

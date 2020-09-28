@@ -6,14 +6,21 @@
 import { Service, Inject } from 'typedi'
 import S3Service from './s3'
 import AlbumService from './album'
+import TrackServices from './track'
 import BeatService from './beat'
 import TrackService from './track'
 import { ObjectId } from 'bson'
+import TrackService from './track';
+import { title } from 'process';
 
 @Service()
 export default class UserService {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
+
+    @Inject('trackModel') private trackModel: Models.TrackModel,
+
+    @Inject('albumModel') private albumModel: Models.AlbumModel,
     private s3Service: S3Service,
 
     private albumService: AlbumService,
@@ -21,7 +28,6 @@ export default class UserService {
     private beatService: BeatService, 
 
     private trackService: TrackService,
-    @Inject('trackModel') private trackModel: Models.TrackModel,
   ) {}
 
   public editUserInfo(userId: ObjectId, userInfo: any, imageFile: any): Promise<any> {
@@ -124,9 +130,44 @@ export default class UserService {
     })
   }
 
-  public search() { // Search artists or users 
-    return new Promise( async(resolve, reject) => {
+  public search = (search: string) => { // Search users  
+    return new Promise( async (resolve, reject) => {
+      try{
+        let matchingSearchUsers = [] //Array of objects which we will fill with the albums data 
+        const searchMatchingUsersDocuments = await this.userModel.find({title: new RegExp(search, 'i')})
+        matchingSearchUsers = searchMatchingUsersDocuments.map(async user => {
+          return { id: user._id, avatar: user.avatarURL, author: user.username}
+        })
+        console.log('matchingSearchUsers :', matchingSearchUsers)
+        resolve({results: matchingSearchUsers})
+      } catch(err) {
+        reject({code: 500, msg: err.message || err.msg})
+      }
+    })
+  }
 
+  public generalSearch = (search: string) => {
+    return new Promise( async(resolve, reject) => {
+      try{
+        let results: any = {} //Array of objects which we will fill with the albums data 
+        const searchMatchingUsersDocuments = await this.userModel.find({title: new RegExp(search, 'i')})
+        const searchMatchingAlbumsDocuments = await this.albumModel.find({title: new RegExp(search, 'i')})
+        const searchMatchingTracksDocuments = await this.trackModel.find({title: new RegExp(search, 'i')})
+        results.users = searchMatchingUsersDocuments.map(async user => {
+          return { id: user._id, avatar: user.avatarURL, author: user.username}
+        })
+        results.albums = searchMatchingAlbumsDocuments.map(async album => {
+          return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username, authorId: author._id}
+
+        })
+        results.tracks = searchMatchingTracksDocuments.map(async track => {
+          return {title: track.title, author: track.authorName, image: track.imageUrl, audio: track.trackUrl}
+        })
+        console.log('General search results:', results)
+        resolve(results)
+      } catch(err) {
+        reject({code: 500, msg: err.message || err.msg})
+      }
     })
   }
 

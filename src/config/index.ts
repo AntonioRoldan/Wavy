@@ -44,6 +44,12 @@ const config = {
 
   api: {
     prefix: '/api',
+    profile: {
+      root: '/profile', 
+      search: '/search', // ?term=value 
+      generalSearch: '/genearl_search', // ?term=value
+      showInfo: '/show_user_info' // /:userId
+    },
     album: {
       root: '/albums',
       upload: '/upload',
@@ -60,6 +66,7 @@ const config = {
     beat: {
       root: '/beats',
       upload: '/upload',
+      shop: '/beats_shop', // ?skip=value&=limit=value 
       search: '/search', // /search?term=value
       getUserBeats: '/user_beats', // /parameters :userId
       addNewTracks: '/add_new_tracks', // parameters: /:beatId

@@ -101,10 +101,19 @@ describe('Beat get routes', async () => {
       console.log('Show beat route error :', err)
     }
   })
+  it('should show the beats shop', async () => {
+    try {
+      const requestInstance = request.get(config.api.beat.root + config.api.beat.shop + '/' + '?skip=8' + '&limit=8')
+      requestInstance.set('x-access-token', accessToken)
+      requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+    } catch (err) {
+      console.log('Show shop route error')
+    }
+  })
   it('should search for albums matching our search term', async () => {
     try {
       const searchTerm = 'Su'
-      const requestInstance = request.get(config.api.beat.root + config.api.beat.search + '/' + searchTerm)
+      const requestInstance = request.get(config.api.beat.root + config.api.beat.search + '/' + '?term=' + searchTerm)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
