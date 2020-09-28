@@ -86,7 +86,11 @@ const config = {
       delete: '/delete' // parameters: /:id
     },
     payment: {
-      root: '/payments'
+      root: '/payments',
+      addToCart: '/add_to_shopping_cart', // /:itemId
+      showCart: '/show_shopping_cart',
+      clearCart: '/clear_shopping_cart',
+      removeFromCart: '/remove_from_cart' // /:itemId
     },
     playlist: {
       root: '/playlists',

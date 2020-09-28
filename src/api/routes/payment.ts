@@ -26,7 +26,7 @@ export default (app: Router) => {
   app.use('/payments', route)
 
   route.post('/apply_discount', (req: Request, res: Response) => {
-
+    // This is an option for users to apply discounts to their products 
   })
 
   route.get('/show_shopping_cart', async (req: Request, res: Response) => {
@@ -72,7 +72,7 @@ export default (app: Router) => {
     }
   })
 
-  route.get('/clear_shopping_cart', async (req: Request, res: Response) => {
+  route.delete('/clear_shopping_cart', async (req: Request, res: Response) => {
     /* 
     Response: []
     */
@@ -89,7 +89,7 @@ export default (app: Router) => {
     }
   })
 
-  route.delete('/delete_item_from_cart/:itemId', async (req: Request, res: Response) =>{
+  route.delete('/remove_from_cart/:itemId', async (req: Request, res: Response) =>{
     /* 
     Response 
     [{
