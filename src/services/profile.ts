@@ -10,7 +10,6 @@ import TrackServices from './track'
 import BeatService from './beat'
 import TrackService from './track'
 import { ObjectId } from 'bson'
-import TrackService from './track';
 import { title } from 'process';
 
 @Service()
@@ -157,7 +156,7 @@ export default class UserService {
           return { id: user._id, avatar: user.avatarURL, author: user.username}
         })
         results.albums = searchMatchingAlbumsDocuments.map(async album => {
-          return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username, authorId: author._id}
+          return { id: album._id, cover: album.coverUrl, title: album.title}
 
         })
         results.tracks = searchMatchingTracksDocuments.map(async track => {

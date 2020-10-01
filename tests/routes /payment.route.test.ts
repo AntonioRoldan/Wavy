@@ -12,7 +12,6 @@ const times = x => f => {
   }
 }
 
-
 let accessToken = '' // We'll have to change this every hour
 let refreshToken = '' // The refresh token lasts for a month
 
