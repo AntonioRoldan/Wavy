@@ -15,6 +15,12 @@ const times = x => f => {
   }
 }
 
+// We have to check the JSON output for
+// User beats
+// Beats shop
+// Search beats
+// Show beat
+
 let fourTimes = times(4)
 
 let twice = times(2)
@@ -35,7 +41,7 @@ describe('Beat post routes', () => {
       const requestInstance = request.post(config.api.beat.root + config.api.beat.upload)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
-      requestInstance.field('beat', '{"title": "Sup", "price": 234, "tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}]}')
+      requestInstance.field('beat', '{"title": "Sup boy", "price": 200, "tracks": [{"title": "Track 1" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Track 2" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Track 3" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}]}')
       fourTimes(() => { requestInstance.attach('tracks', audioFile) })
       requestInstance.attach('cover', coverFile)
       // .attach('arrayname', file)
@@ -52,7 +58,7 @@ describe('Beat post routes', () => {
       const requestInstance = request.post(config.api.beat.root + config.api.beat.addNewTracks + '/' + beatId)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
-      requestInstance.field('tracks', '{"tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}]}')
+      requestInstance.field('tracks', '{tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"]}]}')
       twice(() => { requestInstance.attach('files', audioFile) })
       const res = await requestInstance
       expect(res.text).toEqual('New tracks being added to beat')
@@ -97,6 +103,10 @@ describe('Beat get routes', async () => {
       const requestInstance = request.get(config.api.beat.root + config.api.beat.show + '/' + beatId)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
+      expect(res.body).toEqual({
+        id: 'TO FILL', title: 'Beat 1', author: 'User 2', price: 200, tracksNumber: 4, subDiscount: 200, discount: 200
+      })
     } catch (err) {
       console.log('Show beat route error :', err)
     }
@@ -106,18 +116,22 @@ describe('Beat get routes', async () => {
       const requestInstance = request.get(config.api.beat.root + config.api.beat.shop + '/' + '?skip=8' + '&limit=8')
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
+      expect(res.body).to.be.an('array')
     } catch (err) {
       console.log('Show shop route error')
     }
   })
   it('should search for albums matching our search term', async () => {
     try {
-      const searchTerm = 'Su'
+      const searchTerm = 'Be'
       const requestInstance = request.get(config.api.beat.root + config.api.beat.search + '/' + '?term=' + searchTerm)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
-      // expect(res.body.results[0]).toEqual({ id: beat._id, cover: , title: "Sup", author: author.username, authorId: author._id})
+      expect(res.body).toEqual([
+        { id: 'TO FILL', undercover: 'TO FILL', title: 'Beat 1', author: 'User 2', authorId: 'TO FILL' }
+      ])
     } catch (err) {
       console.log('Search beat route error :', err)
     }
@@ -128,6 +142,9 @@ describe('Beat get routes', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
+      expect(res.body).toEqual([
+        { id: 'TO FILL', undercover: 'TO FILL', title: 'Beat 1', author: 'User 2',  subDiscount: 200, normalDiscount: 200, canEdit: true }
+      ])
     } catch (err) {
       console.log('User beats route error :', err)
     }

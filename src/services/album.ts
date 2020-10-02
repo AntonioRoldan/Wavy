@@ -113,7 +113,7 @@ export default class AlbumService {
           return { id: album._id, cover: album.coverUrl, title: album.title, author: author.username, authorId: author._id}
         })
         console.log('matchingSearchAlbums :', matchingSearchAlbums)
-        resolve({results: matchingSearchAlbums})
+        resolve({matchingSearchAlbums})
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})
       }
@@ -141,7 +141,7 @@ export default class AlbumService {
   //       //TODO: Test this 
   // }
 
-  public getAlbumTracks(albumId: string): Promise<any> {
+  public getAlbumTracks(userId: string, albumId: string): Promise<any> {
         //TODO: Test this and write can edit 
     return new Promise(async (resolve, reject) => {
       try{
@@ -153,7 +153,7 @@ export default class AlbumService {
         albumData.tracks = albumTracks.map(track => {
           return {title: track.title, audio: track.trackUrl, isPremium: track.isPremium, id: track._id}
         })
-        albumData.album = {title: albumDocument.title, authorId: author._id, author: author.username, cover: albumDocument.coverUrl, id: albumDocument._id}
+        albumData.album = {title: albumDocument.title, authorId: author._id, author: author.username, cover: albumDocument.coverUrl, id: albumDocument._id, canEdit: userId === String(albumDocument.authorId)}
         resolve(albumData)
       } catch(err) {
         reject({code: 500, msg: err.message || err.msg})

@@ -13,12 +13,18 @@ const times = x => f => {
   }
 }
 
-// or define intermediate functions for reuse
+// In order to test we will upload two albums, on for the show routes another one for delete
+// We will have to check the database everytime we run the tests to get the delete id which must be the one from the album added with the tests
+// Routes for which we have to check the output JSON object that we will get:
+// Show
+// Search
+// Users albums
+
 let fourTimes = times(4)
 
 let twice = times(2)
-// We should have two albums in the database 
-let albumId = '5f57dc34d2c5bdc29ed3d19b' // This album will always be the same 
+// We should have two albums in the database
+let albumId = '5f57dc34d2c5bdc29ed3d19b' // This album will always be the same
 let deleteAlbumId = '' // This will be the album we upload in the tests which will also be deleted
 let trackId = ''
 let accessToken = '' // We'll have to change this every hour
@@ -34,7 +40,7 @@ describe('Album post routes', () => {
       const requestInstance = request.post(config.api.album.root + config.api.album.upload)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
-      requestInstance.field('album', '{"title": "Sup", "isPremium": false, "tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}]}')
+      requestInstance.field('album', '{"title": "Sup boy", "isPremium": false, "tracks": [{"title": "Track 1" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Track 2" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Track 3" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Track 4" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}]}')
       fourTimes(() => { requestInstance.attach('tracks', audioFile) })
       requestInstance.attach('cover', coverFile)
       // .attach('arrayname', file)
@@ -51,7 +57,7 @@ describe('Album post routes', () => {
       const requestInstance = request.post(config.api.album.root + config.api.album.addNewTracks + '/' + albumId)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
-      requestInstance.field('tracks', '{"tracks": [{"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "Sup boy" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}]}')
+      requestInstance.field('tracks', '{"tracks": [{"title": "New track 1" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}, {"title": "New track 2" , "inspiredArtists": ["Montana", "Hannah"], "genres": ["trap"], "isPremium":  false}]}')
       twice(() => { requestInstance.attach('files', audioFile) })
       const res = await requestInstance
       expect(res.text).toEqual('New tracks being added to album')
@@ -64,7 +70,7 @@ describe('Album post routes', () => {
 describe('Album put routes', async () => {
   it('should edit the cover of an album', async () => {
     try {
-      // TODO: We should have a different image file to test the cover changed in S3 
+      // TODO: We should have a different image file to test the cover changed in S3
       const coverFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'Airbnbplaya2.jpg'))
       const requestInstance = request.put(config.api.album.root + config.api.album.editCover + '/' + albumId)
       requestInstance.set('x-access-token', accessToken)
@@ -95,18 +101,30 @@ describe('Album get routes', async () => {
       const requestInstance = request.get(config.api.album.root + config.api.album.show + '/' + albumId)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
+      const res = await requestInstance
+      expect(res.body).toEqual({
+        tracks: [
+          { title: 'Track 1', audio: 'TO FILL', isPremium: false, id: 'TO FILL' },
+          { title: 'Track 2', audio: 'TO FILL', isPremium: false, id: 'TO FILL' },
+          { title: 'Track 3', audio: 'TO FILL', isPremium: false, id: 'TO FILL' },
+          { title: 'Track 4', audio: 'TO FILL', isPremium: false, id: 'TO FILL' }
+        ],
+        album: { title: 'Album 1', authorId: 'TO FILL', author: 'User 2', cover: 'TO FILL', id: 'TO FILL', canEdit: true }
+      })
     } catch (err) {
       console.log('Show album route error :', err)
     }
   })
   it('should search for albums matching our search term', async () => {
     try {
-      const searchTerm = 'Su'
+      const searchTerm = 'Al'
       const requestInstance = request.get(config.api.album.root + config.api.album.search + '/' + '?term=' + searchTerm)
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
-      // expect(res.body.results[0]).toEqual({ id: album._id, cover: , title: "Sup", author: author.username, authorId: author._id})
+      expect(res.body).toEqual([
+        { id: 'TO FILL', cover: 'TO FILL', title: 'Album 1', author: 'User 2', authorId: 'TO FILL' }
+      ])
     } catch (err) {
       console.log('Search album route error :', err)
     }
@@ -117,6 +135,10 @@ describe('Album get routes', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
+      expect(res.body).to.be.an('array')
+      expect(res.body).toEqual([
+        { id: 'TO FILL', cover: 'TO FILL', title: 'Album 1', author: 'User 2', canEdit: true }
+      ])
     } catch (err) {
       console.log('User albums route error :', err)
     }

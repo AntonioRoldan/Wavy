@@ -1,13 +1,12 @@
 import config from '../../src/config'
 import fs from 'fs'
 var request = require('supertest')
-request = request('http://localhost:8000/')
 var path = require('path')
 request = request('http://localhost:8000/')
 
 let deleteTrackId = '' // This will be the album we upload in the tests which will also be deleted
 let trackId = ''
-let searchTerm = 'Su'
+let searchTerm = 'Track 1'
 let userId = ''
 const times = x => f => {
   if (x > 0) {
@@ -17,6 +16,8 @@ const times = x => f => {
 }
 
 // or define intermediate functions for reuse
+// We should check the JSON output
+// For search and show user tracks
 let fourTimes = times(4)
 
 let twice = times(2)
@@ -50,6 +51,9 @@ describe('Track get routes', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
+      expect(res.body).toEqual([
+        { title: 'Track 1', author: 'User 2', image: 'TO FILL', audio: 'TO FILL' }
+      ])
     } catch (err) {
       console.log('Search tracks route error :', err)
     }
@@ -60,6 +64,12 @@ describe('Track get routes', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
+      expect(res.body).toEqual([
+        { title: 'Track 1', author: 'User 2', image: 'TO FILL', audio: 'TO FILL', type: 'single', canEdit: true }, 
+        { title: 'Track 2', author: 'User 2', image: 'TO FILL', audio: 'TO FILL', type: 'single', canEdit: true },
+        { title: 'Track 3', author: 'User 2', image: 'TO FILL', audio: 'TO FILL', type: 'single', canEdit: true },
+        { title: 'Track 4', author: 'User 2', image: 'TO FILL', audio: 'TO FILL', type: 'single', canEdit: true }
+      ])
     } catch (err) {
       console.log('User tracks route error :', err)
     }
@@ -69,7 +79,7 @@ describe('Track get routes', async () => {
 describe('Track put routes', async () => {
   it('should edit a tracks cover file', async () => {
     try {
-      // TODO: We should have a different image file to test the cover changed in S3 
+      // TODO: We should have a different image file to test the cover changed in S3
       const coverFile = fs.createReadStream(path.join('Users', 'Antonio', 'Musicly-TS', 'tests', 'testfiles', 'Airbnbplaya2.jpg'))
       const requestInstance = request.put(config.api.track.root + config.api.track.editCover + '/' + trackId)
       requestInstance.set('x-access-token', accessToken)
@@ -107,4 +117,3 @@ describe('Track delete routes', async () => {
     }
   })
 })
-

@@ -34,7 +34,7 @@ export default class PaymentService {
           await user.save()
           resolve('Item successfully added to shopping list')
         } catch (err) {
-
+          reject({code: 500, msg: err.message || err.msg})
         }
       })
     }

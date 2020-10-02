@@ -144,7 +144,10 @@ export default (app: Router) => {
     try {
       const albumId = req.params.id
       const albumServiceInstance = Container.get(AlbumService)
-      const albumData = await albumServiceInstance.getAlbumTracks(albumId)
+      const authServiceInstance = Container.get(AuthService)
+      const token = (req.headers['x-access-token'] || req.headers['authorization']) as string
+      const userId = await authServiceInstance.getUserId(token)
+      const albumData = await albumServiceInstance.getAlbumTracks(userId, albumId)
       responseHandle(res, albumData)
     } catch(err) {
       errorHandle(res, err.msg || err.message, err.code)

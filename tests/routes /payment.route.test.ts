@@ -12,6 +12,10 @@ const times = x => f => {
   }
 }
 
+// Show shopping cart
+// Remove item from shopping cart 
+// Clear shopping cart
+// Add item to shopping cart 
 let accessToken = '' // We'll have to change this every hour
 let refreshToken = '' // The refresh token lasts for a month
 
@@ -22,7 +26,7 @@ describe('Add an item to the shopping cart', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
-      expect(res.text).toEqual('Tracks are being uploaded')
+      expect(res.text).toEqual('Item successfully added to shopping list')
     } catch (err) {
       console.log('Add item to shopping cart route error :', err)
     }
@@ -47,7 +51,8 @@ describe('Remove from shopping cart and clear', async () => {
       requestInstance.set('x-access-token', accessToken)
       requestInstance.set('Cookie', [`refresh_token=${refreshToken}`])
       const res = await requestInstance
-      // expect(res.body.results[0]).toEqual({ id: album._id, cover: , title: "Sup", author: author.username, authorId: author._id})
+      expect(res.body).to.be.an('array')
+      expect(res.body).to.have.lengthOf(0)
     } catch (err) {
       console.log('Clear shopping cart route error :', err)
     }
