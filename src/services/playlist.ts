@@ -46,19 +46,10 @@ export default class PlaylistService {
           reject({ code: 400, msg: 'This Playlist does not belong to you' }) //If the playlist and the song exist
         playlist.tracks.push(song._id)
         playlist = await playlist.save()
-        if (playlist.tracks.length === 4) {
-          playlist.tracks.forEach(async id => {
-            const track = await this.trackModel.findById(id)
-            playlist.images.push(track.imageUrl)
-            playlist = await playlist.save()
-            console.log('Playlist collage added :', playlist.images)
-          })
-        } else if (playlist.tracks.length === 1) {
-          const track = await this.trackModel.findById(playlist.tracks[0])
-          playlist.images.push(track.imageUrl)
-          playlist = await playlist.save()
-          console.log('Single image added to playlist:', playlist.images)
+        if(playlist.images.length < 4){
+          playlist.images.push(song.imageUrl)
         }
+        await playlist.save()
         console.log(`New song added to playlist ${playlist.name}:`, playlist.tracks)
         resolve(`Song was added to ${playlist.name}`)
         reject({ code: 400, msg: 'Album does not exist' })
@@ -100,34 +91,16 @@ export default class PlaylistService {
         const tracksDocuments = await this.trackModel.find({
           album: new mongoose.Types.ObjectId(albumId),
         })
-        let setCollageImage: Boolean = false
-        let setSingleImage: Boolean = false
-        console.log('playlist.tracks :', playlist.tracks)
+        console.log('playlist.tracks before :', playlist.tracks)
         if (!playlist)
           reject({ code: 400, msg: 'The playlist you are trying to modify does not exist' })
         if (userId !== String(playlist.author.id))
           reject({ code: 400, msg: 'You do not have access to this playlist' })
-        if (!playlist.tracks.length) {
-          setSingleImage = true
-        } else if (playlist.tracks.length < 4) {
-          const totalTracks = playlist.tracks.length + tracksDocuments.length
-          if (totalTracks >= 4) {
-            setCollageImage = true
-          } else if (totalTracks === 1) {
-            setSingleImage = true
-          }
-        }
         tracksDocuments.forEach(trackDocument => {
           playlist.tracks.push(trackDocument._id)
         })
-        if (setCollageImage) {
-          tracksDocuments.forEach(async (track, index) => {
-            if (index < 4) playlist.images.push(track.imageUrl)
-          })
-          console.log('Collage images added:', playlist.images)
-        } else if (setSingleImage) {
+        if(playlist.images.length < 4) {
           playlist.images.push(tracksDocuments[0].imageUrl)
-          console.log('Single image added :', playlist.images)
         }
         playlist = await playlist.save()
         console.log('newly added tracks :', playlist.tracks)

@@ -79,6 +79,16 @@ export default (app: Router) => {
     }
   })
 
+  route.get('/user_playlists/:userId', async (req: Request, res: Response) => {
+    try {
+      const playlistServiceInstance = Container.get(PlaylistService)
+      const responseData = await playlistServiceInstance.showUserPlaylists(req.params.userId)
+      responseHandle(res, responseData)
+    } catch(err) {
+      errorHandle(res, err.msg, err.code)
+    }
+  })
+
 
   route.get('/show/:playlist_id', async (req: Request, res: Response) => {
     try {
