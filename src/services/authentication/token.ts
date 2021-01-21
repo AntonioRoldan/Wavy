@@ -1,4 +1,5 @@
-/*  
-  Copyright (c) 2020 Antonio Roldan 
-  All rights reserved 
-*/
+/*
+ Copyright (C) Wavy Ltd
+ Unauthorized copying of this file, via any medium is strictly prohibited
+ Proprietary and confidential
+ */

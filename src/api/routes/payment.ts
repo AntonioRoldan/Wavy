@@ -1,7 +1,9 @@
-/*  
-  Copyright (c) 2020 Antonio Roldan 
-  All rights reserved 
-*/
+/*
+ Copyright (C) Wavy Ltd
+ Unauthorized copying of this file, via any medium is strictly prohibited
+ Proprietary and confidential
+ */
+
 // This route will manage the subscription, tutorials and beat payments 
 
 import { Container } from 'typedi'

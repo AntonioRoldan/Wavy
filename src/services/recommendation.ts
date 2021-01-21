@@ -1,9 +1,10 @@
 import { IUser } from "../interfaces/IUser";
 
-/*  
-  Copyright (c) 2020 Antonio Roldan 
-  All rights reserved 
-*/
+/*
+ Copyright (C) Wavy Ltd
+ Unauthorized copying of this file, via any medium is strictly prohibited
+ Proprietary and confidential
+ */
 
 const User : Models.UserModel = require('../models/User')
 const Track : Models.TrackModel = require('../models/Track')

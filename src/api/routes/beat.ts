@@ -1,7 +1,9 @@
-/*  
-  Copyright (c) 2020 Antonio Roldan 
-  All rights reserved 
-*/
+/*
+ Copyright (C) Wavy Ltd
+ Unauthorized copying of this file, via any medium is strictly prohibited
+ Proprietary and confidential
+ */
+
 
 /* 
 TODO: Refactor, call the route album, the create routes will be /album/create, edit /album/delete, edit /album/edit and so on 
