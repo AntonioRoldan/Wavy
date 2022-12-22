@@ -57,7 +57,7 @@
     "express-validator": "^6.2.0",
     "fbgraph": "^1.4.4",
     "jest": "^26.4.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.15",
     "lusca": "^1.6.1",
     "mime-types": "^2.1.27",
